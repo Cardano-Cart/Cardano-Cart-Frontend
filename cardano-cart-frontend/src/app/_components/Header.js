@@ -90,7 +90,7 @@ const Header = () => {
             <Button className="text-black"><a href="/">Home</a></Button>
             <Button className="text-black"><a href="/shop">Shop</a></Button>
             <Button className="text-black"><a href='/orders'>Orders</a></Button>
-            <Button className="text-black"><a href='/cart'>Cart</a></Button>
+            
             <Button className="text-black"><a href="/about">About</a></Button>
             <Button className="text-black"><a href="/contact">Contact</a></Button>
               

@@ -160,3 +160,20 @@ export const completeOrder = async (orderData, transactionId, access_token) => {
     throw error;  // Rethrow the error for further handling
   }
 };
+
+
+
+// get all orders
+export const getAllOrders = async (endpoint, access_token) => {
+  try {
+    const response = await axios.get(endpoint, {
+      headers: {
+        Authorization: `Bearer ${access_token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw error;
+  }
+};
