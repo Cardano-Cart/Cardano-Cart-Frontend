@@ -48,12 +48,11 @@ const OrderPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const access_token = localStorage.getItem('accessToken'); // Assuming you're storing accessToken in localStorage
-  const endpoint = 'http://localhost/api/v1/orders/'; // Update with your actual endpoint
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const fetchedOrders = await getAllOrders(endpoint, access_token);
+        const fetchedOrders = await getAllOrders(access_token);
         console.log(fetchedOrders)
         setOrders(fetchedOrders);
       } catch (error) {
@@ -62,7 +61,7 @@ const OrderPage = () => {
     };
 
     fetchOrders();
-  }, [access_token, endpoint]);
+  }, [access_token]);
 
   const handleOpenDetails = (order) => {
     setSelectedOrder(order);
