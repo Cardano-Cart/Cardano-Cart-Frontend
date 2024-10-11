@@ -3,16 +3,11 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost/api/v1';
 
-<<<<<<< HEAD
-// Function to get all products
-export const getAllProducts = async (access_token) => {
-  const endpoint = `${BASE_URL}/products/`
-=======
+
 
 // Function to get all products
 export const getAllProducts = async (access_token) => {
   const endpoint = `${BASE_URL}/products/`;
->>>>>>> 76966b7 ([Feat] user variation sorted)
   console.log(`Bearer ${access_token}`)
   try {
     const response = await axios.get(endpoint, {
@@ -31,11 +26,8 @@ export const getAllProducts = async (access_token) => {
 
 // function to create a new product
 export const createProduct = async (productData, access_token) => {
-<<<<<<< HEAD
   const endpoint = `${BASE_URL}/products/`
-=======
-  const endpoint = `${BASE_URL}/products/`;
->>>>>>> 76966b7 ([Feat] user variation sorted)
+
   try {
     const response = await axios.post(endpoint, productData, {
       headers: {
@@ -52,13 +44,9 @@ export const createProduct = async (productData, access_token) => {
 
 
 // function to get user
-<<<<<<< HEAD
-export const getUser = async (endpoint, access_token) => {
-  
-=======
+
 export const getUser = async (user_id, access_token) => {
   const endpoint = `${BASE_URL}/users/${user_id}/`;
->>>>>>> 76966b7 ([Feat] user variation sorted)
   try {
     const response = await axios.get(endpoint, {
       headers: {
@@ -211,8 +199,6 @@ export const getAllOrders = async (access_token) => {
 };
 
 
-<<<<<<< HEAD
-=======
 // get current user
 export const getCurrentUser = async (access_token) => {
   const endpoint = `${BASE_URL}/users/me/`;
@@ -228,4 +214,3 @@ export const getCurrentUser = async (access_token) => {
     throw error;
   }
 };
->>>>>>> 76966b7 ([Feat] user variation sorted)
