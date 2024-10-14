@@ -131,8 +131,8 @@ const Home = () => {
         console.log(access_token); // should log access_token correctly
         if (access_token) {
           try {
-            const endpoint = 'http://localhost/api/v1/products/';
-            const fetchedProducts = await getAllProducts(endpoint, access_token);
+            
+            const fetchedProducts = await getAllProducts(access_token);
             setProducts(fetchedProducts);
           } catch (error) {
             console.error('Error fetching products:', error);

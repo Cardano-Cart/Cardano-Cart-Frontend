@@ -1,8 +1,12 @@
 // product.js
 import axios from 'axios';
 
+const BASE_URL = 'http://localhost/api/v1';
+
+
 // Function to get all products
-export const getAllProducts = async (endpoint, access_token) => {
+export const getAllProducts = async (access_token) => {
+  const endpoint = `${BASE_URL}/products/`;
   console.log(`Bearer ${access_token}`)
   try {
     const response = await axios.get(endpoint, {
@@ -20,7 +24,8 @@ export const getAllProducts = async (endpoint, access_token) => {
 
 
 // function to create a new product
-export const createProduct = async (endpoint, productData, access_token) => {
+export const createProduct = async (productData, access_token) => {
+  const endpoint = `${BASE_URL}/products/`;
   try {
     const response = await axios.post(endpoint, productData, {
       headers: {
@@ -37,7 +42,8 @@ export const createProduct = async (endpoint, productData, access_token) => {
 
 
 // function to get user
-export const getUser = async (endpoint, access_token) => {
+export const getUser = async (user_id, access_token) => {
+  const endpoint = `${BASE_URL}/users/${user_id}/`;
   try {
     const response = await axios.get(endpoint, {
       headers: {
@@ -53,7 +59,8 @@ export const getUser = async (endpoint, access_token) => {
 
 
 // update user
-export const updateUser = async (endpoint, userData, access_token) => {
+export const updateUser = async (user_id, userData, access_token) => {
+  const endpoint = `${BASE_URL}/users/${user_id}/`;
   try {
     const response = await axios.put(endpoint, userData, {
       headers: {
@@ -68,7 +75,8 @@ export const updateUser = async (endpoint, userData, access_token) => {
 }
 
 // change user password
-export const updateUserPassword = async (endpoint, userPasswordData, access_token) => {
+export const updateUserPassword = async (user_id, userPasswordData, access_token) => {
+  const endpoint = `${BASE_URL}/users/${user_id}/`;
   try {
     const response = await axios.put(endpoint, userPasswordData, {
       headers: {
@@ -90,7 +98,7 @@ export const fetchProductSeller = async (product_id, access_token) => {
   try {
     // Step 1: Fetch the product by product_id
     const paymentResponse = await axios.post(
-      `http://localhost/api/v1/payments/get_address/${product_id}/`, 
+      `${BASE_URL}/payments/get_address/${product_id}/`, 
       {}, // Empty body for POST request
       {
         headers: {
@@ -119,7 +127,7 @@ export const fetchProductSeller = async (product_id, access_token) => {
 
 // make an order
 
-const BASE_URL = 'http://localhost/api/v1';
+
 
 export const completeOrder = async (orderData, transactionId, access_token) => {
   try {
@@ -158,5 +166,40 @@ export const completeOrder = async (orderData, transactionId, access_token) => {
   } catch (error) {
     console.error('Error completing order:', error.response ? error.response.data : error.message);
     throw error;  // Rethrow the error for further handling
+  }
+};
+
+
+
+// get all orders
+export const getAllOrders = async (access_token) => {
+  const endpoint = `${BASE_URL}/orders/`;
+  try {
+    const response = await axios.get(endpoint, {
+      headers: {
+        Authorization: `Bearer ${access_token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw error;
+  }
+};
+
+
+// get current user
+export const getCurrentUser = async (access_token) => {
+  const endpoint = `${BASE_URL}/users/me/`;
+  try {
+    const response = await axios.get(endpoint, {
+      headers: {
+        Authorization: `Bearer ${access_token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw error;
   }
 };

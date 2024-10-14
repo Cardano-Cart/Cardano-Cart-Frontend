@@ -26,6 +26,9 @@ import {
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import Header from '../_components/Header';
+import { getAllOrders } from '../../../utils/_products';
+import { formatDate } from '../../../utils/_dateformat';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 'bold',
@@ -44,12 +47,21 @@ const OrderPage = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  const access_token = localStorage.getItem('accessToken'); // Assuming you're storing accessToken in localStorage
+
   useEffect(() => {
-    const storedOrders = localStorage.getItem('orders');
-    if (storedOrders) {
-      setOrders(JSON.parse(storedOrders));
-    }
-  }, []);
+    const fetchOrders = async () => {
+      try {
+        const fetchedOrders = await getAllOrders(access_token);
+        console.log(fetchedOrders)
+        setOrders(fetchedOrders);
+      } catch (error) {
+        console.error('Failed to fetch orders:', error);
+      }
+    };
+
+    fetchOrders();
+  }, [access_token]);
 
   const handleOpenDetails = (order) => {
     setSelectedOrder(order);
@@ -86,8 +98,8 @@ const OrderPage = () => {
                     <TableCell component="th" scope="row">
                       {order.id}
                     </TableCell>
-                    <TableCell align="right">{order.date}</TableCell>
-                    <TableCell align="right">₳{order.total.toFixed(2)}</TableCell>
+                    <TableCell align="right">{formatDate(order.created_at)}</TableCell>
+                    <TableCell align="right">₳{order.total_amount}</TableCell>
                     <TableCell align="center">
                       <StatusChip label={order.status} status={order.status} />
                     </TableCell>
@@ -108,7 +120,7 @@ const OrderPage = () => {
         <DialogTitle>Order Details - #{selectedOrder?.id}</DialogTitle>
         <DialogContent>
           <Typography variant="subtitle1" gutterBottom>
-            Date: {selectedOrder?.date}
+            Date: {formatDate(selectedOrder?.created_at)}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
             Status: <StatusChip label={selectedOrder?.status} status={selectedOrder?.status} />
@@ -121,7 +133,7 @@ const OrderPage = () => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={3}>
                   <Image
-                    src={selectedOrder?.product.image || '/placeholder.svg'}
+                    src={selectedOrder?.product.images[0].image_url || '/placeholder.svg'}
                     alt={selectedOrder?.product.name}
                     width={80}
                     height={80}
@@ -131,14 +143,14 @@ const OrderPage = () => {
                 <Grid item xs={9}>
                   <ListItemText
                     primary={selectedOrder?.product.name}
-                    secondary={`Quantity: ${selectedOrder?.quantity} - Price: ₳${selectedOrder?.product.price.toFixed(2)}`}
+                    secondary={`Quantity: ${selectedOrder?.total_amount/selectedOrder?.product.price} - Price: ₳${selectedOrder?.product.price}`}
                   />
                 </Grid>
               </Grid>
             </ListItem>
           </List>
           <Typography variant="h6" sx={{ mt: 2 }}>
-            Total: ₳{selectedOrder?.total.toFixed(2)}
+            Total: ₳{selectedOrder?.total_amount}
           </Typography>
         </DialogContent>
         <DialogActions>

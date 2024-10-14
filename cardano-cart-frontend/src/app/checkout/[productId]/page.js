@@ -106,8 +106,6 @@ const Checkout = () => {
         console.log('Payment completed successfully:', paymentResult);
         // Handle success, e.g., show a success message, redirect, etc.
   
-        handleCloseDialog();
-        removeItem(productId); // Use productId here, not product.id
         alert('Payment confirmed! Thank you for your purchase.');
         router.push('/orders');
       })
@@ -116,6 +114,8 @@ const Checkout = () => {
         // Handle error, e.g., show an error message, etc.
         alert('An error occurred: ' + (error.response ? error.response.data : error.message));
       });
+      handleCloseDialog();
+      removeItem(productId); // Use productId here, not product.id
   };
   
 
