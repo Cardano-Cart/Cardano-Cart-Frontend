@@ -8,28 +8,32 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const access_token = localStorage.getItem('accessToken');
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (access_token) {
+      const accessToken = localStorage.getItem('accessToken');
+      
+      if (accessToken) {
+        setLoading(true); // Set loading to true while fetching data
         try {
           // Fetch user data from the /me/ endpoint
-          const userResponse = await getCurrentUser(access_token);
-          console.log(user)
-          setUser(userResponse);
+          const userResponse = await getCurrentUser(accessToken);
+          setUser(userResponse);  // Store user data in state
         } catch (error) {
           console.error('Error fetching user data:', error);
+          // Handle invalid or expired token case (e.g., clear the token)
+          localStorage.removeItem('accessToken');
+          setUser(null);
         } finally {
-          setLoading(false);
+          setLoading(false);  // Set loading to false once the API call is finished
         }
       } else {
-        setLoading(false);
+        setLoading(false);  // No token, stop loading
       }
     };
 
-    fetchUserData();
-  }, [access_token]);
+    fetchUserData();  // Invoke the function on mount
+  }, []);  // Empty dependency array, runs only on mount
 
   return (
     <UserContext.Provider value={{ user, setUser, loading }}>
