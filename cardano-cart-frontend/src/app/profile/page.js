@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   Container,
   Typography,
@@ -20,9 +20,12 @@ import {
 import { Edit, Save, Lock, CloudUpload } from '@mui/icons-material';
 import Header from '../_components/Header';
 import { getUser, updateUser, updateUserPassword } from '../../../utils/_products';
+import { UserContext } from '../../../utils/UserContext'; // Adjust the path as necessary
+
 
 const ProfilePage = () => {
   const access_token = localStorage.getItem('accessToken');
+  const { user, loading } = useContext(UserContext);
   
 
   const [editing, setEditing] = useState(false);
@@ -40,13 +43,25 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
+    if (!loading && user) {
+      setProfile({
+        name: `${user.first_name} ${user.last_name}`,
+        email: user.email,
+        address: user.address,
+        phone: user.phone_number,
+      });
+      setAvatarUrl(user.avatar);
+    }
+  }, [user, loading]);
+
+  useEffect(() => {
     const fetchUser = async () => {
       if (typeof window !== 'undefined') {
         console.log(access_token); // should log access_token correctly
         if (access_token) {
           try {
-            const endpoint = 'http://localhost/api/v1/users/3/';
-            const fetchedUser = await getUser(endpoint, access_token);
+            const user_id = user?.id;
+            const fetchedUser = await getUser(user_id, access_token);
             setProfile({
               name: fetchedUser?.first_name + ' ' + fetchedUser?.last_name,
               email: fetchedUser?.email,
@@ -86,7 +101,7 @@ const ProfilePage = () => {
     setEditing(false);
     console.log('Editing')
   
-    const endpoint = 'http://localhost/api/v1/users/3/';
+    const user_id = user?.id;
     const updatedUserForm = new FormData();
     if (avatarFile) {
       updatedUserForm.append('avatar', avatarFile); // Add the file to the form data
@@ -106,7 +121,7 @@ const ProfilePage = () => {
   
     try {
       // Wait for the async updateUserProfile function to resolve
-      const response = await updateUser(endpoint, updatedUserForm, access_token);
+      const response = await updateUser(user_id, updatedUserForm, access_token);
       
       // Optionally, handle the response (e.g., show success message)
       console.log('Profile updated successfully:', response);
@@ -140,7 +155,7 @@ const ProfilePage = () => {
   const handlePasswordSave = async () => {
     // Define the endpoint and updated user password payload
     if (passwords.new.length > 0 && (passwords.new == passwords.confirm)){
-      const endpoint = 'http://localhost/api/v1/users/3/';
+      const user_id = user?.id;
       const updatedUser = {
         current_password: passwords.current,
         new_password: passwords.new
@@ -150,7 +165,7 @@ const ProfilePage = () => {
 
   
       try {
-        const response = await updateUserPassword(endpoint, updatedUser, access_token);      
+        const response = await updateUserPassword(user_id, updatedUser, access_token);      
         console.log('Password change successful:', response);
         handlePasswordDialogClose();
       } catch (error) {
