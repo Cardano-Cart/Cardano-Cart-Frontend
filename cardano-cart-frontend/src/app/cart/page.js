@@ -89,7 +89,7 @@ const CartPage = () => {
                               <Close />
                             </IconButton>
                             <Image
-                              src={item.images[0].image_url || '/placeholder.svg'}
+                              src={item.image || '/placeholder.svg'}
                               alt={item.name}
                               width={60}
                               height={60}

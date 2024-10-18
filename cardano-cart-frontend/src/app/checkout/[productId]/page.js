@@ -233,7 +233,7 @@ const Checkout = () => {
               </Typography>
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid item xs={3}>
-                  <img src={order.product.images[0].image_url} alt={order.product.name} style={{ width: '100%' }} /> 
+                  <img src={order.product.image} alt={order.product.name} style={{ width: '100%' }} /> 
                 </Grid>
                 <Grid item xs={9}>
                   <Typography variant="body1">{order.product.name}</Typography>

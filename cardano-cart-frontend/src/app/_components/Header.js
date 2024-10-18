@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+
 import { 
   Typography, 
   IconButton, 
@@ -15,6 +15,8 @@ import {
   ListItem,
   ListItemText
 } from '@mui/material';
+
+import React, { useState, useEffect, useContext } from 'react';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -22,10 +24,12 @@ import { motion } from 'framer-motion';
 import { styled } from '@mui/system';
 import { useCart } from 'react-use-cart';
 import CartDrawer from './CartDrawer';
+import { UserContext } from '../../../utils/UserContext'; // Adjust the path as necessary
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hasToken, setHasToken] = useState(false);
   const { totalItems } = useCart();
@@ -38,6 +42,8 @@ const Header = () => {
       setHasToken(true);
     }
   }, []);
+
+  const { user, loading, setUser } = useContext(UserContext); // Use user directly from context
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,6 +60,7 @@ const Header = () => {
   const handleCartClose = () => {
     setCartOpen(false);
   };
+
 
   const handleMobileMenuToggle = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -87,6 +94,7 @@ const Header = () => {
     },
   };
 
+
   const menuItems = [
     { text: 'Home', href: '/' },
     { text: 'ABout', href: '/about' },
@@ -94,6 +102,10 @@ const Header = () => {
     { text: 'Orders', href: '/orders' },
     
   ];
+
+  if (loading) {
+    return null; // Or a loader, depending on your UI
+  }
 
   return (
     <AppBar position="static" color="transparent" className="bg-white shadow-md">
@@ -117,6 +129,7 @@ const Header = () => {
                 <a href={item.href}>{item.text}</a>
               </Button>
             ))}
+
 
           </motion.div>
 
@@ -143,7 +156,7 @@ const Header = () => {
               }}
             >
               <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {hasToken ? (
+                {user ? (  // If user is logged in
                   <>
                     <Link href="/profile" style={{ textDecoration: 'none', width: '100%', marginBottom: '8px' }}>
                       <Button variant="outlined" color="primary" fullWidth>
@@ -152,12 +165,12 @@ const Header = () => {
                     </Link>
                     <Button variant="contained" color="primary" fullWidth onClick={() => {
                       localStorage.removeItem('accessToken');
-                      setHasToken(false);
+                      setUser(null);  // Update context to reflect logout
                     }}>
                       Logout
                     </Button>
                   </>
-                ) : (
+                ) : (  // If user is not logged in
                   <>
                     <Link href="/sign-in" style={{ textDecoration: 'none', width: '100%', marginBottom: '8px' }}>
                       <Button variant="outlined" color="primary" fullWidth>
@@ -176,7 +189,7 @@ const Header = () => {
 
             {/* Shopping Cart Icon */}
             <IconButton aria-label="cart" className="text-black">
-              <StyledBadge badgeContent={mounted ? totalItems : 0} color="primary" onClick={handleCartOpen}>
+              <StyledBadge badgeContent={totalItems} color="primary" onClick={handleCartOpen}>
                 <ShoppingCartIcon />
               </StyledBadge>
             </IconButton>

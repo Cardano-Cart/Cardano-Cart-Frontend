@@ -95,7 +95,7 @@ const Shop = () => {
   };
 
   const handleAddToCart = (product) => {
-    addItem(product);
+    addItem({id: product.id, name: product.name, price: product.price, image: product.images[0].image_url});
     setAlertMessage(`${product.name} added to cart successfully!`);
     setAlertOpen(true);
   };

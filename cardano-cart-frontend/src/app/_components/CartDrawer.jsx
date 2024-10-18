@@ -36,7 +36,7 @@ const CartDrawer = ({ open, onClose }) => {
                 <ListItem key={item.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <img
-                      src={item.images[0].image_url}
+                      src={item.image}
                       alt={item.name}
                       style={{ width: 50, height: 50, marginRight: 16 }} 
                     />
