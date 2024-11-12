@@ -1,27 +1,27 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { 
-  Typography, 
-  IconButton, 
-  AppBar, 
-  Badge, 
-  Toolbar, 
-  Button, 
-  Box, 
-  Popover, 
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  Typography,
+  IconButton,
+  AppBar,
+  Badge,
+  Toolbar,
+  Button,
+  Box,
+  Popover,
   Link,
   Drawer,
   List,
   ListItem,
-  ListItemText
-} from '@mui/material';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { motion } from 'framer-motion';
-import { styled } from '@mui/system';
-import { useCart } from 'react-use-cart';
-import CartDrawer from './CartDrawer';
+  ListItemText,
+} from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { motion } from "framer-motion";
+import { styled } from "@mui/system";
+import { useCart } from "react-use-cart";
+import CartDrawer from "./CartDrawer";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -33,7 +33,7 @@ const Header = () => {
 
   useEffect(() => {
     setMounted(true);
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (token) {
       setHasToken(true);
     }
@@ -64,16 +64,16 @@ const Header = () => {
   }
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
-    '& .MuiBadge-badge': {
+    "& .MuiBadge-badge": {
       right: -3,
       top: 13,
       border: `2px solid blue`,
-      padding: '0 4px',
+      padding: "0 4px",
     },
   }));
 
   const open = Boolean(anchorEl);
-  const id = open ? 'account-popover' : undefined;
+  const id = open ? "account-popover" : undefined;
 
   const fadeInFromLeft = {
     hidden: { opacity: 0, x: -20 },
@@ -88,15 +88,18 @@ const Header = () => {
   };
 
   const menuItems = [
-    { text: 'Home', href: '/' },
-    { text: 'ABout', href: '/about' },
-    { text: 'Shop', href: '/shop' },
-    { text: 'Orders', href: '/orders' },
-    
+    { text: "Home", href: "/" },
+    { text: "ABout", href: "/about" },
+    { text: "Shop", href: "/shop" },
+    { text: "Orders", href: "/orders" },
   ];
 
   return (
-    <AppBar position="static" color="transparent" className="bg-white shadow-md">
+    <AppBar
+      position="static"
+      color="transparent"
+      className="bg-white shadow-md"
+    >
       <Toolbar className="flex justify-between items-center">
         <motion.div
           className="flex items-center"
@@ -104,24 +107,36 @@ const Header = () => {
           animate="visible"
           variants={fadeInFromLeft}
         >
-          <Typography variant="h6" className="text-black font-bold mr-2">
-            Cardano Cart
-          </Typography>
+          <a href="/">
+            <Typography variant="h6" className="text-black font-bold mr-2">
+              Cardano Cart
+            </Typography>
+          </a>
         </motion.div>
 
-        <motion.div className="flex items-center space-x-4" variants={fadeInFromLeft} initial="hidden" animate="visible">
+        <motion.div
+          className="flex items-center space-x-4"
+          variants={fadeInFromLeft}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Menu Links */}
-          <motion.div className="hidden md:flex space-x-4" variants={fadeInFromLeft}>
+          <motion.div
+            className="hidden md:flex space-x-4"
+            variants={fadeInFromLeft}
+          >
             {menuItems.map((item, index) => (
               <Button key={index} className="text-black">
                 <a href={item.href}>{item.text}</a>
               </Button>
             ))}
-
           </motion.div>
 
           {/* Cart & Auth */}
-          <motion.div className="flex items-center space-x-4" variants={fadeInFromLeft}>
+          <motion.div
+            className="flex items-center space-x-4"
+            variants={fadeInFromLeft}
+          >
             {/* Account Icon */}
             <IconButton className="text-black" onClick={handleClick}>
               <AccountCircleIcon />
@@ -134,37 +149,66 @@ const Header = () => {
               anchorEl={anchorEl}
               onClose={handleClose}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
+                vertical: "bottom",
+                horizontal: "right",
               }}
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
             >
-              <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Box
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
                 {hasToken ? (
                   <>
-                    <Link href="/profile" style={{ textDecoration: 'none', width: '100%', marginBottom: '8px' }}>
+                    <Link
+                      href="/profile"
+                      style={{
+                        textDecoration: "none",
+                        width: "100%",
+                        marginBottom: "8px",
+                      }}
+                    >
                       <Button variant="outlined" color="primary" fullWidth>
                         Profile
                       </Button>
                     </Link>
-                    <Button variant="contained" color="primary" fullWidth onClick={() => {
-                      localStorage.removeItem('accessToken');
-                      setHasToken(false);
-                    }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={() => {
+                        localStorage.removeItem("accessToken");
+                        setHasToken(false);
+                      }}
+                    >
                       Logout
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Link href="/sign-in" style={{ textDecoration: 'none', width: '100%', marginBottom: '8px' }}>
+                    <Link
+                      href="/sign-in"
+                      style={{
+                        textDecoration: "none",
+                        width: "100%",
+                        marginBottom: "8px",
+                      }}
+                    >
                       <Button variant="outlined" color="primary" fullWidth>
                         Login
                       </Button>
                     </Link>
-                    <Link href="/sign-up" style={{ textDecoration: 'none', width: '100%' }}>
+                    <Link
+                      href="/sign-up"
+                      style={{ textDecoration: "none", width: "100%" }}
+                    >
                       <Button variant="contained" color="primary" fullWidth>
                         Sign Up
                       </Button>
@@ -176,7 +220,11 @@ const Header = () => {
 
             {/* Shopping Cart Icon */}
             <IconButton aria-label="cart" className="text-black">
-              <StyledBadge badgeContent={mounted ? totalItems : 0} color="primary" onClick={handleCartOpen}>
+              <StyledBadge
+                badgeContent={mounted ? totalItems : 0}
+                color="primary"
+                onClick={handleCartOpen}
+              >
                 <ShoppingCartIcon />
               </StyledBadge>
             </IconButton>
@@ -184,7 +232,12 @@ const Header = () => {
 
           {/* Mobile Menu Icon */}
           <motion.div className="md:hidden" variants={fadeInFromLeft}>
-            <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMobileMenuToggle}>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={handleMobileMenuToggle}
+            >
               <MenuIcon className="text-black" />
             </IconButton>
           </motion.div>
