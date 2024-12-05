@@ -1,19 +1,36 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, Grid, TextField, Alert, Snackbar, Card, CardContent, CardMedia, CardActions, useTheme, useMediaQuery } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
-import Header from './_components/Header';
-import theme from './_components/theme';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Typography,
+  Button,
+  Box,
+  Grid,
+  TextField,
+  Alert,
+  Snackbar,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActions,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import Header from "./_components/Header";
+import theme from "./_components/theme";
+import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { useCart } from "react-use-cart";
-import { current_products } from './data';
+import { current_products } from "./data";
 
-import { getAllProducts } from '../../utils/_products';
+import { getAllProducts } from "../../utils/_products";
+// import { useRouter } from "next/compat/router";
+import { useRouter } from "next/navigation";
 
 const fadeInEffect = {
   hidden: { opacity: 0, y: 20 },
@@ -30,33 +47,51 @@ const fadeInEffect = {
 const ProductCard = ({ id, name, image, price, onAddToCart }) => {
   const { addItem } = useCart();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Here
+  const router = useRouter();
+  
+  const handleShowDetails = () => {
+    // router.push(`/product/${id}`); // Navigate to the product details page
+    console.log("Product ID:", id);
+    if (id) {
+      router.push(`/product/${id}`);
+    } else {
+      console.error("Product not available");
+    }
+  };
 
   const handleAddToCart = () => {
+    // e.stopPropagation(); // Prevent the event from bubbling up
     addItem({ id: id, name, price, image });
     onAddToCart(`${name} added to cart successfully!`);
   };
 
   return (
-    <Card sx={{ 
-      height: '100%', 
-      display: 'flex', 
-      flexDirection: 'column', 
-      borderRadius: '10px',
-      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-      transition: 'transform 0.3s ease-in-out',
-      '&:hover': {
-        transform: 'scale(1.03)',
-      },
-    }}>
+    <Card
+      style={{ cursor: "pointer" }}
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: "10px",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        transition: "transform 0.3s ease-in-out",
+        "&:hover": {
+          transform: "scale(1.03)",
+        },
+      }}
+    >
       <CardMedia
+        onClick={handleShowDetails}
         component="img"
         height={isMobile ? "120" : "150"}
         image={image}
         alt={name}
-        sx={{ objectFit: 'cover', aspectRatio: '1 / 1' }}
+        sx={{ objectFit: "cover", aspectRatio: "1 / 1" }}
       />
-      <CardContent sx={{ flexGrow: 1, padding: 1 }}>
+      <CardContent onClick={handleShowDetails} sx={{ flexGrow: 1, padding: 1 }}>
         <Typography gutterBottom variant="body1" component="div" noWrap>
           {name}
         </Typography>
@@ -64,9 +99,17 @@ const ProductCard = ({ id, name, image, price, onAddToCart }) => {
           {price} ADA
         </Typography>
       </CardContent>
-      <CardActions sx={{ justifyContent: 'center', padding: 1 }}>
-        <Button 
-          variant="contained" 
+      <CardActions sx={{ justifyContent: "center", padding: 1 }}>
+        {/* <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          size="small"
+          stopPropagation={handleShowDetails}
+          onClick={handleAddToCart}
+        > */}
+        <Button
+          variant="contained"
           color="primary"
           fullWidth
           size="small"
@@ -103,32 +146,31 @@ const NextArrow = (props) => {
 
 const Home = () => {
   const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+  const [alertMessage, setAlertMessage] = useState("");
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   // fetch products from the backend
   const [products, setProducts] = useState(current_products);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (typeof window !== 'undefined') {
-        const access_token = localStorage.getItem('accessToken');
+      if (typeof window !== "undefined") {
+        const access_token = localStorage.getItem("accessToken");
         //console.log(access_token); // should log access_token correctly
         if (access_token) {
           try {
-            
             const fetchedProducts = await getAllProducts(access_token);
             setProducts(fetchedProducts);
             //console.log(fetchedProducts)
           } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error("Error fetching products:", error);
           }
         }
       }
     };
-  
+
     fetchProducts();
   }, []);
 
@@ -138,7 +180,7 @@ const Home = () => {
   };
 
   const handleCloseAlert = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setAlertOpen(false);
@@ -161,12 +203,12 @@ const Home = () => {
         <Container maxWidth="xl" sx={{ mt: { xs: 2, sm: 4, md: 6 } }}>
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
               gap: { xs: 2, sm: 3, md: 4 },
-              flexDirection: { xs: 'column', md: 'row' },
-              textAlign: { xs: 'center', md: 'left' },
+              flexDirection: { xs: "column", md: "row" },
+              textAlign: { xs: "center", md: "left" },
             }}
           >
             <motion.div
@@ -175,19 +217,24 @@ const Home = () => {
               variants={fadeInEffect}
               style={{ flex: 1 }}
             >
-              <Typography variant="h3" component="h1" gutterBottom sx={{ fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' } }}>
+              <Typography
+                variant="h3"
+                component="h1"
+                gutterBottom
+                sx={{ fontSize: { xs: "2.5rem", sm: "3rem", md: "3.5rem" } }}
+              >
                 <Box
                   component="span"
-                  sx={{ color: '#000679', fontWeight: 'bold' }}
+                  sx={{ color: "#000679", fontWeight: "bold" }}
                 >
                   Cardano
                 </Box>
                 <Box
                   component="span"
                   sx={{
-                    color: 'black',
-                    fontWeight: 'bold',
-                    marginLeft: '10px',
+                    color: "black",
+                    fontWeight: "bold",
+                    marginLeft: "10px",
                   }}
                 >
                   Cart
@@ -206,11 +253,11 @@ const Home = () => {
               initial="hidden"
               animate="visible"
               variants={fadeInEffect}
-              style={{ flex: 1, textAlign: 'right' }}
+              style={{ flex: 1, textAlign: "right" }}
             >
               <Box
                 sx={{
-                  textAlign: { xs: 'center', md: 'right' },
+                  textAlign: { xs: "center", md: "right" },
                   marginTop: { xs: 2, md: 0 },
                 }}
               >
@@ -218,9 +265,9 @@ const Home = () => {
                   src="/images/Cardano Cart.png"
                   alt="Cardano Cart"
                   style={{
-                    maxWidth: '100%',
-                    height: 'auto',
-                    width: { xs: '80%', sm: '70%', md: '60%' },
+                    maxWidth: "100%",
+                    height: "auto",
+                    width: { xs: "80%", sm: "70%", md: "60%" },
                   }}
                 />
               </Box>
@@ -228,13 +275,21 @@ const Home = () => {
           </Box>
 
           <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
-            <Typography variant="h4" gutterBottom align="center" sx={{ mb: { xs: 2, sm: 3, md: 4 }, fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' } }}>
+            <Typography
+              variant="h4"
+              gutterBottom
+              align="center"
+              sx={{
+                mb: { xs: 2, sm: 3, md: 4 },
+                fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" },
+              }}
+            >
               New Arrivals
             </Typography>
-            <Box sx={{ position: 'relative', padding: '0 25px' }}>
+            <Box sx={{ position: "relative", padding: "0 25px" }}>
               <Slider {...settings}>
                 {products.map((product) => (
-                  <Box key={product.id} sx={{ padding: '0 5px' }}>
+                  <Box key={product.id} sx={{ padding: "0 5px" }}>
                     <ProductCard
                       id={product.id}
                       name={product.name}
@@ -249,13 +304,22 @@ const Home = () => {
           </Box>
 
           <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
-            <Typography variant="h4" gutterBottom align="center" sx={{ mb: { xs: 2, sm: 3, md: 4 }, fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' } }}>
+            <Typography
+              variant="h4"
+              gutterBottom
+              align="center"
+              sx={{
+                mb: { xs: 2, sm: 3, md: 4 },
+                fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" },
+              }}
+            >
               Featured Products
             </Typography>
             <Grid container spacing={2}>
               {products.slice(0, 8).map((product) => (
                 <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
                   <ProductCard
+                    id={product.id}
                     name={product.name}
                     image={product.images[0].image_url}
                     price={product.price}
@@ -267,39 +331,81 @@ const Home = () => {
           </Box>
 
           <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
-            <Typography variant="h4" gutterBottom align="center" sx={{ fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' } }}>
+            <Typography
+              variant="h4"
+              gutterBottom
+              align="center"
+              sx={{ fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" } }}
+            >
               About Cardano Cart
             </Typography>
             <Typography variant="body1" paragraph align="center">
-              Cardano Cart is revolutionizing e-commerce by leveraging the power of Cardano blockchain. 
-              We offer a secure, fast, and cost-effective shopping experience for our customers.
+              Cardano Cart is revolutionizing e-commerce by leveraging the power
+              of Cardano blockchain. We offer a secure, fast, and cost-effective
+              shopping experience for our customers.
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <Button variant="outlined" color="primary">
                 Learn More
               </Button>
             </Box>
           </Box>
 
-          <Box sx={{ my: { xs: 4, sm: 6, md: 8 }, backgroundColor: '#f5f5f5', py: { xs: 2, sm: 3, md: 4 }, borderRadius: 2 }}>
-            <Typography variant="h5" gutterBottom align="center" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>
+          <Box
+            sx={{
+              my: { xs: 4, sm: 6, md: 8 },
+              backgroundColor: "#f5f5f5",
+              py: { xs: 2, sm: 3, md: 4 },
+              borderRadius: 2,
+            }}
+          >
+            <Typography
+              variant="h5"
+              gutterBottom
+              align="center"
+              sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.75rem" } }}
+            >
               Subscribe to Our Newsletter
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center' }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                mt: 2,
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: "center",
+              }}
+            >
               <TextField
                 variant="outlined"
                 placeholder="Enter your email"
                 size="small"
-                sx={{ mr: { xs: 0, sm: 1 }, mb: { xs: 1, sm: 0 }, backgroundColor: 'white', width: { xs: '100%', sm: 'auto' } }}
+                sx={{
+                  mr: { xs: 0, sm: 1 },
+                  mb: { xs: 1, sm: 0 },
+                  backgroundColor: "white",
+                  width: { xs: "100%", sm: "auto" },
+                }}
               />
-              <Button variant="contained" color="primary" sx={{ width: { xs: '100%', sm: 'auto' } }}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ width: { xs: "100%", sm: "auto" } }}
+              >
                 Subscribe
               </Button>
             </Box>
           </Box>
         </Container>
 
-        <Box component="footer" sx={{ backgroundColor: '#000679', color: 'white', py: { xs: 3, sm: 4, md: 6 } }}>
+        <Box
+          component="footer"
+          sx={{
+            backgroundColor: "#000679",
+            color: "white",
+            py: { xs: 3, sm: 4, md: 6 },
+          }}
+        >
           <Container maxWidth="lg">
             <Grid container spacing={4}>
               <Grid item xs={12} sm={6}>
@@ -314,8 +420,8 @@ const Home = () => {
                 <Typography variant="h6" gutterBottom>
                   Quick Links
                 </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                  {['Home', 'Shop', 'About Us', 'Contact'].map((link) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                  {["Home", "Shop", "About Us", "Contact"].map((link) => (
                     <Button key={link} color="inherit" sx={{ mr: 2, mb: 1 }}>
                       {link}
                     </Button>
@@ -331,8 +437,16 @@ const Home = () => {
           </Container>
         </Box>
       </ThemeProvider>
-      <Snackbar open={alertOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseAlert}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {alertMessage}
         </Alert>
       </Snackbar>
