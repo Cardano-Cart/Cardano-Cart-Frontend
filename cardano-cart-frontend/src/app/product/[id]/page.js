@@ -6,12 +6,31 @@ import Header from "../../_components/Header";
 import Button from "@mui/material/Button";
 import { current_products } from "../../data";
 import { useCart } from "react-use-cart";
-// import handleAddToCart from "../../hooks/handleAddToCart";
+// import { getAllProducts } from "../.././utils/_products";
+import {
+  Container,
+  Typography,
+  Box,
+  Grid,
+  TextField,
+  Alert,
+  Snackbar,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActions,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export default function ProductPage() {
-  const { id } = useParams(); // Get the dynamic route ID
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const { addItem } = useCart();
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -28,7 +47,6 @@ export default function ProductPage() {
             console.error("Error fetching product:", error);
           }
         } else {
-          // Fallback to local data if no access token
           const selectedProduct = current_products.find(
             (prod) => prod.id === parseInt(id)
           );
@@ -40,17 +58,23 @@ export default function ProductPage() {
     fetchProduct();
   }, [id]);
 
-  // Display a loading state if product data is not available
-  if (!product) return <p>Loading product...</p>;
-  const handleAddToCart = () => {
-    // e.stopPropagation(); // Prevent the event from bubbling up
+  if (!product) return;
+  const handleAddToCart = (product) => {
     addItem({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.images[0].image_url,
     });
-    onAddToCart(`${product.name} added to cart successfully!`);
+    setAlertMessage(`${product.name} added to cart successfully!`);
+    setAlertOpen(true);
+  };
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlertOpen(false);
   };
 
   return (
@@ -58,7 +82,6 @@ export default function ProductPage() {
       <Header />
       <div className="min-h-screen flex items-center justify-center p-8 rounded-lg shadow-md">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl flex flex-col lg:flex-row gap-8">
-          {/* Product Image */}
           <div className="flex-shrink-0">
             <Image
               src={product.images[0].image_url}
@@ -69,7 +92,6 @@ export default function ProductPage() {
             />
           </div>
 
-          {/* Product Details */}
           <div className="flex-grow">
             <h1 className="text-2xl font-bold text-gray-800">{product.name}</h1>
             <div className="mt-1">
@@ -85,24 +107,30 @@ export default function ProductPage() {
             {/* Add to Cart and Buy Now Buttons */}
             <div className="mt-8 flex gap-4">
               <Button
-                onClick={handleAddToCart}
+                onClick={() => handleAddToCart(product)}
                 variant="contained"
                 color="primary"
                 className="mt-2 px-4 py-2 text-white rounded"
               >
                 Add to Cart
               </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                className="mt-2 px-4 py-2 text-white rounded"
-              >
-                Buy Now
-              </Button>
             </div>
           </div>
         </div>
       </div>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseAlert}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

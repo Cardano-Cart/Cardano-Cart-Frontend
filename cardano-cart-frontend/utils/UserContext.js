@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { getCurrentUser } from '../utils/_products'; // Adjust the path as necessary
+import React, { createContext, useState, useEffect } from "react";
+import { getCurrentUser } from "../utils/_products"; // Adjust the path as necessary
 
 // Create the User Context
 export const UserContext = createContext();
@@ -8,7 +8,12 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const access_token = localStorage.getItem('accessToken');
+  const [access_token, setAccessToken] = useState(null);
+  // const access_token = localStorage.getItem('accessToken');
+
+  useEffect(() => {
+    const data = localStorage.getItem("accessToken");
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -19,7 +24,7 @@ export const UserProvider = ({ children }) => {
           //console.log(user)
           setUser(userResponse);
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error("Error fetching user data:", error);
         } finally {
           setLoading(false);
         }

@@ -49,12 +49,9 @@ const ProductCard = ({ id, name, image, price, onAddToCart }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Here
   const router = useRouter();
-  
+
   const handleShowDetails = () => {
-    // router.push(`/product/${id}`); // Navigate to the product details page
-    console.log("Product ID:", id);
     if (id) {
       router.push(`/product/${id}`);
     } else {
@@ -70,6 +67,7 @@ const ProductCard = ({ id, name, image, price, onAddToCart }) => {
 
   return (
     <Card
+      onClick={handleShowDetails}
       style={{ cursor: "pointer" }}
       sx={{
         height: "100%",
@@ -84,14 +82,13 @@ const ProductCard = ({ id, name, image, price, onAddToCart }) => {
       }}
     >
       <CardMedia
-        onClick={handleShowDetails}
         component="img"
         height={isMobile ? "120" : "150"}
         image={image}
         alt={name}
         sx={{ objectFit: "cover", aspectRatio: "1 / 1" }}
       />
-      <CardContent onClick={handleShowDetails} sx={{ flexGrow: 1, padding: 1 }}>
+      <CardContent sx={{ flexGrow: 1, padding: 1 }}>
         <Typography gutterBottom variant="body1" component="div" noWrap>
           {name}
         </Typography>
@@ -100,20 +97,15 @@ const ProductCard = ({ id, name, image, price, onAddToCart }) => {
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: "center", padding: 1 }}>
-        {/* <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          size="small"
-          stopPropagation={handleShowDetails}
-          onClick={handleAddToCart}
-        > */}
         <Button
           variant="contained"
           color="primary"
           fullWidth
           size="small"
-          onClick={handleAddToCart}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddToCart();
+          }}
         >
           Add to Cart
         </Button>

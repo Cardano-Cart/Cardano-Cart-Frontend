@@ -1,91 +1,90 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Container, 
-  Typography, 
-  Grid, 
-  Card, 
-  CardContent, 
-  CardMedia, 
-  Button, 
-  TextField, 
-  Slider, 
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Button,
+  TextField,
+  Slider,
   Box,
   InputAdornment,
   Paper,
   useMediaQuery,
   useTheme,
   Alert,
-  Snackbar
-} from '@mui/material';
+  Snackbar,
+} from "@mui/material";
 import { useCart } from "react-use-cart";
-import Header from '../_components/Header';
-import { current_products } from '../data';
-import { Search } from '@mui/icons-material';
-import ShopAnimation from '../_components/ShopLoading';
-import { getAllProducts } from '../../../utils/_products';
+import Header from "../_components/Header";
+import { current_products } from "../data";
+import { Search } from "@mui/icons-material";
+import ShopAnimation from "../_components/ShopLoading";
+import { getAllProducts } from "../../../utils/_products";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Shop = () => {
   const { addItem, items } = useCart();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const theme = useTheme();
   const [products, setProducts] = useState(current_products);
   const [filteredProducts, setFilteredProducts] = useState(products);
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const [alertOpen, setAlertOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [alertMessage, setAlertMessage] = useState('');
+  const [alertMessage, setAlertMessage] = useState("");
+  const { id } = useParams();
+  const router = useRouter();
 
   const getItemQuantity = (productId) => {
-    const item = items.find(item => item.id === productId);
+    const item = items.find((item) => item.id === productId);
     return item ? item.quantity : 0;
   };
 
-  
   // fetch products from the backend
-
-
 
   useEffect(() => {
     const fetchProducts = async () => {
-      if (typeof window !== 'undefined') {
-        const access_token = localStorage.getItem('accessToken');
+      if (typeof window !== "undefined") {
+        const access_token = localStorage.getItem("accessToken");
         console.log(access_token); // should log access_token correctly
         if (access_token) {
           try {
-            
             const fetchedProducts = await getAllProducts(access_token);
             setProducts(fetchedProducts);
           } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error("Error fetching products:", error);
           }
         }
       }
     };
-  
+
     fetchProducts();
   }, []);
-
- 
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 2000);
     setMounted(true);
-    const filtered = products.filter(product => 
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      product.price >= priceRange[0] &&
-      product.price <= priceRange[1]
+    const filtered = products.filter(
+      (product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        product.price >= priceRange[0] &&
+        product.price <= priceRange[1]
     );
     setFilteredProducts(filtered);
   }, [searchTerm, priceRange, products]);
   if (isLoading) {
     return <ShopAnimation />;
   }
-  
+
   if (!mounted) {
     return null;
   }
@@ -95,28 +94,44 @@ const Shop = () => {
   };
 
   const handleAddToCart = (product) => {
-    addItem({id: product.id, name: product.name, price: product.price, image: product.images[0].image_url});
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0].image_url,
+    });
     setAlertMessage(`${product.name} added to cart successfully!`);
     setAlertOpen(true);
   };
 
   const handleCloseAlert = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setAlertOpen(false);
   };
 
+  const handleShowDetails = (productId) => {
+    if (productId) {
+      router.push(`/product/${productId}`);
+    } else {
+      console.error("Product not available");
+    }
+  };
+
   return (
     <>
-      <Header/>
+      <Header />
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" gutterBottom>
           All Products
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} md={3} sx={{ mb: 2 }}>
-            <Paper elevation={3} sx={{ p: 2, position: { md: 'sticky' }, top: 20 }}>
+            <Paper
+              elevation={3}
+              sx={{ p: 2, position: { md: "sticky" }, top: 20 }}
+            >
               <Typography variant="h6" gutterBottom>
                 Filter Products
               </Typography>
@@ -142,9 +157,9 @@ const Shop = () => {
                 valueLabelDisplay="auto"
                 min={0}
                 max={1000}
-                sx={{ width: '100%' }}
+                sx={{ width: "100%" }}
               />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography>₳{priceRange[0]}</Typography>
                 <Typography>₳{priceRange[1]}</Typography>
               </Box>
@@ -154,27 +169,50 @@ const Shop = () => {
             <Grid container spacing={2}>
               {filteredProducts.map((product) => (
                 <Grid item xs={6} sm={4} md={3} key={product.id}>
-                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleShowDetails(product.id)} // Pass the product ID here
+                  >
                     <CardMedia
                       component="img"
-                      height={isMobile ? '100' : isTablet ? '120' : '140'}
+                      height={isMobile ? "100" : isTablet ? "120" : "140"}
                       image={product.images[0].image_url}
                       alt={product.name}
                       sx={{
-                        objectFit: 'cover',
+                        objectFit: "cover",
                         height: {
-                          xs: '140px', // Mobile devices
-                          sm: '160px', // Tablets
-                          md: '180px', // Laptops/Desktops
+                          xs: "140px", // Mobile devices
+                          sm: "160px", // Tablets
+                          md: "180px", // Laptops/Desktops
                         },
                       }}
                     />
-                    <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 1 }}>
+                    <CardContent
+                      sx={{
+                        flexGrow: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        p: 1,
+                      }}
+                    >
                       <Box>
-                        <Typography variant={isMobile ? "body2" : "subtitle1"} component="div" noWrap>
+                        <Typography
+                          variant={isMobile ? "body2" : "subtitle1"}
+                          component="div"
+                          noWrap
+                        >
                           {product.name}
                         </Typography>
-                        <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary">
+                        <Typography
+                          variant={isMobile ? "caption" : "body2"}
+                          color="text.secondary"
+                        >
                           ₳{product.price}
                         </Typography>
                       </Box>
@@ -182,8 +220,12 @@ const Shop = () => {
                         variant="contained"
                         color="primary"
                         size={isMobile ? "small" : "medium"}
-                        onClick={() => handleAddToCart(product)}
+                        // onClick={() => handleAddToCart(product)}
                         sx={{ mt: 1 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(product);
+                        }}
                       >
                         Add To Cart
                       </Button>
@@ -195,8 +237,16 @@ const Shop = () => {
           </Grid>
         </Grid>
       </Container>
-      <Snackbar open={alertOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseAlert}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {alertMessage}
         </Alert>
       </Snackbar>
