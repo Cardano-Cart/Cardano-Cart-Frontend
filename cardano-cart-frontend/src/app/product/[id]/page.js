@@ -92,13 +92,13 @@ export default function ProductPage() {
               >
                 Add to Cart
               </Button>
-              <Button
+              {/* <Button
                 variant="contained"
                 color="primary"
                 className="mt-2 px-4 py-2 text-white rounded"
               >
                 Buy Now
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

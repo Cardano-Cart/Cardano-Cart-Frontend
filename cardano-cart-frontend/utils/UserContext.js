@@ -8,7 +8,14 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const access_token = localStorage.getItem('accessToken');
+  // const access_token = localStorage.getItem('accessToken');
+  const [access_token, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    // This will only run on the client side
+    const data = localStorage.getItem('accessToken');
+    setAccessToken(data);
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {

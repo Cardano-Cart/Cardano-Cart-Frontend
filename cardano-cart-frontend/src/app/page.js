@@ -31,6 +31,7 @@ import { current_products } from "./data";
 import { getAllProducts } from "../../utils/_products";
 // import { useRouter } from "next/compat/router";
 import { useRouter } from "next/navigation";
+import { WalletProvider } from './_components/WalletContext'
 
 const fadeInEffect = {
   hidden: { opacity: 0, y: 20 },
@@ -199,7 +200,9 @@ const Home = () => {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Header />
+        <WalletProvider>
+          <Header />
+        {/* <Header /> */}
         <Container maxWidth="xl" sx={{ mt: { xs: 2, sm: 4, md: 6 } }}>
           <Box
             sx={{
@@ -436,6 +439,7 @@ const Home = () => {
             </Box>
           </Container>
         </Box>
+        </WalletProvider>
       </ThemeProvider>
       <Snackbar
         open={alertOpen}
@@ -451,6 +455,12 @@ const Home = () => {
         </Alert>
       </Snackbar>
     </>
+
+
+  // return (
+  // <WalletProvider>
+  //   <Header />
+  // </WalletProvider>
   );
 };
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Typography,
   IconButton,
@@ -22,6 +22,10 @@ import { motion } from "framer-motion";
 import { styled } from "@mui/system";
 import { useCart } from "react-use-cart";
 import CartDrawer from "./CartDrawer";
+import { WalletContext } from './WalletContext'
+// import { WalletProvider } from './WalletContext'
+import { UserContext } from '../../../utils/UserContext' // Adjust the path as necessary
+import ConnectWallet from '../_hooks/YoroiWallet' 
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -30,6 +34,11 @@ const Header = () => {
   const [hasToken, setHasToken] = useState(false);
   const { totalItems } = useCart();
   const [mounted, setMounted] = useState(false);
+  const { user, loading, setUser } = useContext(UserContext);
+  // const { isConnected, walletName, balance, connectWallet, disconnectWallet }
+  // useContext(WalletContext);
+  const { isConnected, walletName, balance, connectWallet, disconnectWallet } = useContext(WalletContext);
+  // const { walletName, wallet, isConnected, balance, connectWallet, disconnectWallet } = useContext(WalletProvider);
 
   useEffect(() => {
     setMounted(true);
@@ -93,6 +102,10 @@ const Header = () => {
     { text: "Shop", href: "/shop" },
     { text: "Orders", href: "/orders" },
   ];
+
+  // if (loading) {
+  //   return null // Or a loader, depending on your UI
+  // }
 
   return (
     <AppBar
@@ -217,7 +230,7 @@ const Header = () => {
                 )}
               </Box>
             </Popover>
-
+            < ConnectWallet/>
             {/* Shopping Cart Icon */}
             <IconButton aria-label="cart" className="text-black">
               <StyledBadge
