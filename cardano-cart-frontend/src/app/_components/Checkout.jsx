@@ -17,11 +17,14 @@ import { Delete, Add, Remove } from '@mui/icons-material';
 import { useCart } from './CardContext';
 import QRCode from "react-qr-code";
 
+import { verifyPayment } from '../../../utils/_products';
 
 const Checkout = () => {
   const { cart, removeFromCart, updateQuantity } = useCart();
   const [openDialog, setOpenDialog] = useState(false);
   const [transactionId, setTransactionId] = useState('');
+
+  const [order, setOrder] = useState(null);
 
   const walletAddress = 'addr1v9w8x44wkuqujvv3mxfshqtvk7ymwfm8luxv04q7z8373g52ujk0';
 
@@ -43,12 +46,30 @@ const Checkout = () => {
     setTransactionId('');
   };
 
+  // verify payment here
   const handleSubmitTransaction = () => {
-    // Here you would typically send the transaction ID to your backend for verification
     console.log('Transaction ID submitted:', transactionId);
-    handleCloseDialog();
-    alert('Payment confirmed! Thank you for your purchase.');
+    const orderId = order?.id;
+    console.log(orderId)
+  
+    // Call the function to complete the order and verify payment
+    verifyPayment(orderId, transactionId, access_token)
+      .then(paymentResult => {
+        console.log('Payment completed successfully:', paymentResult);
+        // Handle success, e.g., show a success message, redirect, etc.
+  
+        alert('Payment confirmed! Thank you for your purchase.');
+        router.push('/orders');
+      })
+      .catch(error => {
+        console.error('Error completing order and payment:', error);
+        // Handle error, e.g., show an error message, etc.
+        alert('An error occurred: ' + (error.response ? error.response.data : error.message));
+      });
+      handleCloseDialog();
+      removeItem(productId); // Use productId here, not product.id
   };
+
 
   return (
     <>

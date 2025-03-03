@@ -19,6 +19,11 @@ import Stack from '@mui/joy/Stack';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import  GoogleIcon  from './GoogleIcon';
+import dynamic from 'next/dynamic';
+const SignUpAnimation = dynamic(() => import('../_components/SignUpAnimation'));
+
+const BASE_URL = 'https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1';
+//const BASE_URL = 'http://127.0.0.1:8000/api/v1';
 
 function ColorSchemeToggle(props) {
   const { onClick, ...other } = props;
@@ -59,9 +64,12 @@ export  default function JoySignInSideTemplate() {
   const [lastName, setLastName] = useState('');
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isLoading, setLoading] = useState(false);
 
   const handleEmailSignUp = async (event) => {
     event.preventDefault();
+    setLoading(true);
+
 
     const formData = new FormData();
     formData.append('email', email);
@@ -73,23 +81,25 @@ export  default function JoySignInSideTemplate() {
     formData.append('last_name', lastName);
     
     try {
-      const result = await fetch('http://127.0.0.1:8000/api/v1/users/register/', {
+      const result = await fetch(`${BASE_URL}/users/register/`, {
         method: 'POST',
         body: formData,
       });
   
       
       if (result.ok) {
-        alert('Sign up successful!');
-        router.push('/sign-in');
-        
+        alert('Sign up successful! Please sign in to continue.');
+        router.push('/sign-in'); 
       }
 
       const res = await result.json();
-      console.log(res);
+      //console.log(res);
     } catch (error) {
       console.error('Error during sign up:', error.message);
       alert(error.message);
+    }
+    finally {
+      setLoading(false);
     }
       
   };
@@ -106,6 +116,33 @@ export  default function JoySignInSideTemplate() {
           },
         }}
       />
+      {isLoading && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 9999,
+          }}
+        >
+          <SignUpAnimation/>
+          <Typography
+            sx={{
+              color: 'white',
+              fontSize: '24px',
+              fontWeight: 'bold',
+            }}
+          >
+            Loading...
+          </Typography>
+        </Box>
+      )}
       <Box
         sx={(theme) => ({
           width: { xs: '100%', md: '50vw' },
