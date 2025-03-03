@@ -10,6 +10,8 @@ import {
   Button,
   Box,
   Divider,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { Close, Delete } from '@mui/icons-material';
 import { useCart } from "react-use-cart";
@@ -17,10 +19,21 @@ import Link from 'next/link';
 
 const CartDrawer = ({ open, onClose }) => {
   const { items, removeItem, cartTotal, emptyCart, updateItemQuantity } = useCart();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
-    <Drawer anchor="right" open={open} onClose={onClose}>
-      <Box sx={{ width: 450, p: 2 }}>
+    <Drawer 
+      anchor="right" 
+      open={open} 
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: isMobile ? '100%' : 350,
+        },
+      }}
+    >
+      <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h6">Your Cart</Typography>
           <IconButton onClick={onClose}>
@@ -31,59 +44,54 @@ const CartDrawer = ({ open, onClose }) => {
           <Typography>Your cart is empty</Typography>
         ) : (
           <>
-            <List>
+            <List sx={{ flexGrow: 1, overflowY: 'auto' }}>
               {items.map((item) => (
                 <ListItem key={item.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                     <img
                       src={item.image}
                       alt={item.name}
-                      style={{ width: 50, height: 50, marginRight: 16 }} 
+                      style={{ width: 50, height: 50, marginRight: 16, objectFit: 'cover' }} 
                     />
                     <ListItemText
                       primary={item.name}
                       secondary={`₳${item.price} each`}
+                      primaryTypographyProps={{ variant: 'body2' }}
+                      secondaryTypographyProps={{ variant: 'caption' }}
                     />
                   </Box>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      borderRadius: '16px',
-                      border: '1px solid #ccc',
-                      padding: '4px',
-                      marginTop: 1, 
-                      minWidth: '120px',
-                      justifyContent: 'space-between', 
-                    }}
-                  >
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
-                      disabled={item.quantity <= 1} 
-                      sx={{ borderTopLeftRadius: '16px', borderBottomLeftRadius: '16px' }}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', mt: 1 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        borderRadius: '16px',
+                        border: '1px solid #ccc',
+                        padding: '4px',
+                        minWidth: '100px',
+                      }}
                     >
-                      -
-                    </Button>
-                    <Typography
-                      variant="body1"
-                      sx={{ mx: 1, textAlign: 'center', flexGrow: 1 }} 
-                    >
-                      {item.quantity}
-                    </Typography>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
-                      sx={{ borderTopRightRadius: '16px', borderBottomRightRadius: '16px' }}
-                    >
-                      +
-                    </Button>
-                  </Box>
-                  <ListItemSecondaryAction>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                      <IconButton edge="end" aria-label="delete" onClick={() => removeItem(item.id)} size="small" sx={{ mt: 1 }}>
+                      <Button
+                        variant="text"
+                        size="small"
+                        onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                        disabled={item.quantity <= 1} 
+                      >
+                        -
+                      </Button>
+                      <Typography variant="body2" sx={{ mx: 1, textAlign: 'center', flexGrow: 1 }}>
+                        {item.quantity}
+                      </Typography>
+                      <Button
+                        variant="text"
+                        size="small"
+                        onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                      >
+                        +
+                      </Button>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <IconButton edge="end" aria-label="delete" onClick={() => removeItem(item.id)} size="small">
                         <Delete />
                       </IconButton>
                       <Link href={`/checkout/${item.id}`} passHref>
@@ -92,28 +100,30 @@ const CartDrawer = ({ open, onClose }) => {
                           color="primary"
                           size="small"
                           onClick={onClose}
-                          sx={{ mt: 1 }}
+                          sx={{ ml: 1 }}
                         >
                           Checkout
                         </Button>
                       </Link>
                     </Box>
-                  </ListItemSecondaryAction>
+                  </Box>
                 </ListItem>
               ))}
             </List>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>
-              Total: ₳{cartTotal.toFixed(2)}
-            </Typography>
-            <Button variant="outlined" color="secondary" onClick={emptyCart} sx={{ mb: 2 }}>
-              Clear Cart
-            </Button>
-            <Link href="/cart" passHref>
-              <Button variant="outlined" fullWidth sx={{ mb: 2 }} onClick={onClose}>
-                View Full Cart
+            <Box sx={{ mt: 'auto' }}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                Total: ₳{cartTotal.toFixed(2)}
+              </Typography>
+              <Button variant="outlined" color="secondary" onClick={emptyCart} sx={{ mb: 2, width: '100%' }}>
+                Clear Cart
               </Button>
-            </Link>
+              <Link href="/cart" passHref style={{ width: '100%' }}>
+                <Button variant="contained" fullWidth onClick={onClose}>
+                  View Full Cart
+                </Button>
+              </Link>
+            </Box>
           </>
         )}
       </Box>

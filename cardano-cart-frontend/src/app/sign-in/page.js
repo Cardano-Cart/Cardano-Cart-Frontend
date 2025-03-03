@@ -14,19 +14,24 @@ import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import IconButton from '@mui/joy/IconButton';
 
-import Avatar from '@mui/material/Avatar';
+
 import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Stack from '@mui/joy/Stack';
-import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
-import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
+import dynamic from 'next/dynamic';
 
-import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
-import  GoogleIcon  from './GoogleIcon';
-
+import Image from 'next/image';
+import { UserContext } from '../../../utils/UserContext';
+import { useContext } from 'react';
+const SignInAnimation = dynamic(() => import('../_components/SignInAnimation'));
+const DarkModeRoundedIcon = dynamic(() => import('@mui/icons-material/DarkModeRounded'));
+const LightModeRoundedIcon = dynamic(() => import('@mui/icons-material/LightModeRounded'));
 
 import { Auth } from '../../../utils/_auth';
+
+const BASE_URL = 'https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1';
+//const BASE_URL = 'http://127.0.0.1:8000/api/v1';
 
 const auth = new Auth();
 
@@ -60,34 +65,34 @@ const customTheme = extendTheme({ defaultColorScheme: 'dark' });
 
 export  default function JoySignInSideTemplate() {
   const router = useRouter();
-
+  const { setUser } = useContext(UserContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setLoading] = useState(false);
 
   const handleEmailSignIn = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
-    const credentials = {
-      email: email,
-      password: password,
-    };
-  
-    const endpoint = 'http://127.0.0.1:8000/api/v1/users/login/';
-  
-    auth.Credentials(credentials, endpoint)
-    .then(user => {
-      console.log('Authenticated user:', user)
+    const credentials = { email, password };
+    const endpoint = `${BASE_URL}/users/login/`;
 
-      const accessToken = user.access;  // Adjust this based on your API response structure
-    
-      // Save the access token (or other user data) to localStorage
+    try {
+      const user = await auth.Credentials(credentials, endpoint);
+      const accessToken = user.access;
       localStorage.setItem('accessToken', accessToken);
-    
-      // Redirect the user to the homepage
+      console.log('Access Token:', accessToken);
+      setUser(user);
+      // Ensure the redirect happens after the token is stored
       router.push('/');
-    })
-    .catch(error => console.error('Error:', error));
-  }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Invalid email or password. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
 
 
@@ -101,7 +106,33 @@ export  default function JoySignInSideTemplate() {
             '--Transition-duration': '0.4s', 
           },
         }}
-      />
+      />{isLoading && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 9999,
+          }}
+        >
+          <SignInAnimation/>
+          <Typography
+            sx={{
+              color: 'white',
+              fontSize: '24px',
+              fontWeight: 'bold',
+            }}
+          >
+            Loading...
+          </Typography>
+        </Box>
+      )}
       <Box
         sx={(theme) => ({
           width: { xs: '100%', md: '50vw' },
@@ -133,12 +164,18 @@ export  default function JoySignInSideTemplate() {
           >
             <Box sx={{ gap: 2, display: 'flex', alignItems: 'center' }}>
               <IconButton variant="soft" color="primary" size="sm">
-                <img src='images/Cart Logo.png' 
-              style={{ width: '80px', height: '80px' }}
-              />
-              
+              <Image
+              src="/images/Cart Logo.png"
+              alt="Cardano Cart Logo"
+              width={40}
+              height={40}
+              priority
+            />
+                
               </IconButton>
-              <Typography level="title-lg" style={{ fontSize: '30px' }}>Cardano Cart</Typography>
+              <Link href="/" sx={{  fontWeight: 'bold', textDecoration: 'none', alignItems: 'center', fontSize:'22px'}} className="text-black font-bold mr-2">
+            Cardano Cart
+          </Link>
             </Box>
             <Box sx={{ transform: 'scale(0.8)' }}>
             <ColorSchemeToggle />
@@ -206,9 +243,9 @@ export  default function JoySignInSideTemplate() {
                   </Box>
 
                   <Link href="/home">
-                  <Button type="submit" fullWidth>
-                    Sign in
-                  </Button>
+                  <Button type="submit" fullWidth disabled={isLoading}>
+                {isLoading ? 'Signing in...' : 'Sign in'}
+              </Button>
                   </Link>
                 </Stack>
               </form>

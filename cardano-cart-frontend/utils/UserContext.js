@@ -8,32 +8,34 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [access_token, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    // This will only run on the client side
+    const data = localStorage.getItem('accessToken');
+    setAccessToken(data);
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const accessToken = localStorage.getItem('accessToken');
-      
-      if (accessToken) {
-        setLoading(true); // Set loading to true while fetching data
+      if (access_token) {
         try {
           // Fetch user data from the /me/ endpoint
-          const userResponse = await getCurrentUser(accessToken);
-          setUser(userResponse);  // Store user data in state
+          const userResponse = await getCurrentUser(access_token);
+          //console.log(user)
+          setUser(userResponse);
         } catch (error) {
           console.error('Error fetching user data:', error);
-          // Handle invalid or expired token case (e.g., clear the token)
-          localStorage.removeItem('accessToken');
-          setUser(null);
         } finally {
-          setLoading(false);  // Set loading to false once the API call is finished
+          setLoading(false);
         }
       } else {
-        setLoading(false);  // No token, stop loading
+        setLoading(false);
       }
     };
 
-    fetchUserData();  // Invoke the function on mount
-  }, []);  // Empty dependency array, runs only on mount
+    fetchUserData();
+  }, [access_token]);
 
   return (
     <UserContext.Provider value={{ user, setUser, loading }}>

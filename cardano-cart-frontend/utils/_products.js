@@ -1,20 +1,21 @@
 // product.js
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost/api/v1';
+const BASE_URL = 'https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1';
+//const BASE_URL = 'http://localhost/api/v1';
 
 
 // Function to get all products
 export const getAllProducts = async (access_token) => {
   const endpoint = `${BASE_URL}/products/`;
-  console.log(`Bearer ${access_token}`)
+  //console.log(`Bearer ${access_token}`)
   try {
     const response = await axios.get(endpoint, {
       headers: {
         Authorization: `Bearer ${access_token}`
       }
     });
-    console.log(response.data);
+    //console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -25,6 +26,7 @@ export const getAllProducts = async (access_token) => {
 
 // function to create a new product
 export const createProduct = async (productData, access_token) => {
+
   const endpoint = `${BASE_URL}/products/`;
   try {
     const response = await axios.post(endpoint, productData, {
@@ -42,6 +44,7 @@ export const createProduct = async (productData, access_token) => {
 
 
 // function to get user
+
 export const getUser = async (user_id, access_token) => {
   const endpoint = `${BASE_URL}/users/${user_id}/`;
   try {
@@ -108,7 +111,7 @@ export const fetchProductSeller = async (product_id, access_token) => {
     );
 
     const payment = paymentResponse.data;
-    console.log('Fetched product:', payment);
+    //console.log('Fetched product:', payment);
 
     // Check if seller ID is present
     const payment_address = payment.payment_address;
@@ -129,7 +132,8 @@ export const fetchProductSeller = async (product_id, access_token) => {
 
 
 
-export const completeOrder = async (orderData, transactionId, access_token) => {
+export const completeOrder = async (orderData, access_token) => {
+  access_token = localStorage.getItem('accessToken');
   try {
     // Step 1: Send POST request to create the order
     const orderResponse = await axios.post(`${BASE_URL}/orders/`, orderData, {
@@ -146,11 +150,21 @@ export const completeOrder = async (orderData, transactionId, access_token) => {
       throw new Error('Order ID is not returned from the order creation response.');
     }
 
-    console.log('Order created successfully with ID:', orderId);
+    //console.log('Order created successfully with ID:', orderId);
+    return orderId;  // Return the order ID
 
-    // Step 2: Send POST request to verify payment
-    const paymentResponse = await axios.post(`${BASE_URL}/payments/verify_payment/${orderId}/`, {
-      transaction_id: transactionId,
+    
+  } catch (error) {
+    console.error('Error completing order:', error.response ? error.response.data : error.message);
+    throw error;  // Rethrow the error for further handling
+  }
+};
+
+
+export const verifyPayment = async(order_id, transaction_id, access_token) => {
+  try{
+    const paymentResponse = await axios.post(`${BASE_URL}/payments/verify_payment/${order_id}/`, {
+      transaction_id: transaction_id,
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -160,15 +174,14 @@ export const completeOrder = async (orderData, transactionId, access_token) => {
 
     const paymentResult = paymentResponse.data;
 
-    console.log('Payment verification result:', paymentResult);
+    //console.log('Payment verification result:', paymentResult);
 
     return paymentResult;  // Return the payment verification result
-  } catch (error) {
-    console.error('Error completing order:', error.response ? error.response.data : error.message);
+  }catch(error){
+    console.error('Error verifying payment:', error.response ? error.response.data : error.message);
     throw error;  // Rethrow the error for further handling
   }
 };
-
 
 
 // get all orders

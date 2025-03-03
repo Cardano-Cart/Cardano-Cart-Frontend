@@ -1,0 +1,108 @@
+{
+    "items": [
+      {
+        "image": "/images/img1.png",
+        "title": "DESIGN SLIDER",
+        "topic": "Aerphone",
+        "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, laborum cumque dignissimos quidem atque et eligendi aperiam voluptates beatae maxime.",
+        "detailTitle": "Aerphone GHTK",
+        "detailDescription": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, reiciendis suscipit nobis nulla animi, modi explicabo quod corrupti impedit illo, accusantium in eaque nam quia adipisci aut distinctio porro eligendi. Reprehenderit nostrum consequuntur ea! Accusamus architecto dolores modi ducimus facilis quas voluptatibus! Tempora ratione accusantium magnam nulla tenetur autem beatae.",
+        "specifications": [
+          { "name": "Used Time", "value": "6 hours" },
+          { "name": "Charging port", "value": "Type-C" },
+          { "name": "Compatible", "value": "Android" },
+          { "name": "Bluetooth", "value": "5.3" },
+          { "name": "Controlled", "value": "Touch" }
+        ],
+        "addToCartText": "ADD TO CART",
+        "checkoutText": "CHECKOUT"
+      },
+      {
+        "image": "/images/img2.png",
+        "title": "DESIGN SLIDER",
+        "topic": "Aerphone",
+        "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, laborum cumque dignissimos quidem atque et eligendi aperiam voluptates beatae maxime.",
+        "detailTitle": "Aerphone GHTK",
+        "detailDescription": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, reiciendis suscipit nobis nulla animi, modi explicabo quod corrupti impedit illo, accusantium in eaque nam quia adipisci aut distinctio porro eligendi. Reprehenderit nostrum consequuntur ea! Accusamus architecto dolores modi ducimus facilis quas voluptatibus! Tempora ratione accusantium magnam nulla tenetur autem beatae.",
+        "specifications": [
+          { "name": "Used Time", "value": "6 hours" },
+          { "name": "Charging port", "value": "Type-C" },
+          { "name": "Compatible", "value": "Android" },
+          { "name": "Bluetooth", "value": "5.3" },
+          { "name": "Controlled", "value": "Touch" }
+        ],
+        "addToCartText": "ADD TO CART",
+        "checkoutText": "CHECKOUT"
+      },
+      {
+        "image": "/images/img3.png",
+        "title": "DESIGN SLIDER",
+        "topic": "Aerphone",
+        "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, laborum cumque dignissimos quidem atque et eligendi aperiam voluptates beatae maxime.",
+        "detailTitle": "Aerphone GHTK",
+        "detailDescription": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, reiciendis suscipit nobis nulla animi, modi explicabo quod corrupti impedit illo, accusantium in eaque nam quia adipisci aut distinctio porro eligendi. Reprehenderit nostrum consequuntur ea! Accusamus architecto dolores modi ducimus facilis quas voluptatibus! Tempora ratione accusantium magnam nulla tenetur autem beatae.",
+        "specifications": [
+          { "name": "Used Time", "value": "6 hours" },
+          { "name": "Charging port", "value": "Type-C" },
+          { "name": "Compatible", "value": "Android" },
+          { "name": "Bluetooth", "value": "5.3" },
+          { "name": "Controlled", "value": "Touch" }
+        ],
+        "addToCartText": "ADD TO CART",
+        "checkoutText": "CHECKOUT"
+      },
+      {
+        "image": "/images/img4.png",
+        "title": "DESIGN SLIDER",
+        "topic": "Aerphone",
+        "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, laborum cumque dignissimos quidem atque et eligendi aperiam voluptates beatae maxime.",
+        "detailTitle": "Aerphone GHTK",
+        "detailDescription": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, reiciendis suscipit nobis nulla animi, modi explicabo quod corrupti impedit illo, accusantium in eaque nam quia adipisci aut distinctio porro eligendi. Reprehenderit nostrum consequuntur ea! Accusamus architecto dolores modi ducimus facilis quas voluptatibus! Tempora ratione accusantium magnam nulla tenetur autem beatae.",
+        "specifications": [
+          { "name": "Used Time", "value": "6 hours" },
+          { "name": "Charging port", "value": "Type-C" },
+          { "name": "Compatible", "value": "Android" },
+          { "name": "Bluetooth", "value": "5.3" },
+          { "name": "Controlled", "value": "Touch" }
+        ],
+        "addToCartText": "ADD TO CART",
+        "checkoutText": "CHECKOUT"
+      },
+      {
+        "image": "/images/img5.png",
+        "title": "DESIGN SLIDER",
+        "topic": "Aerphone",
+        "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, laborum cumque dignissimos quidem atque et eligendi aperiam voluptates beatae maxime.",
+        "detailTitle": "Aerphone GHTK",
+        "detailDescription": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, reiciendis suscipit nobis nulla animi, modi explicabo quod corrupti impedit illo, accusantium in eaque nam quia adipisci aut distinctio porro eligendi. Reprehenderit nostrum consequuntur ea! Accusamus architecto dolores modi ducimus facilis quas voluptatibus! Tempora ratione accusantium magnam nulla tenetur autem beatae.",
+        "specifications": [
+          { "name": "Used Time", "value": "6 hours" },
+          { "name": "Charging port", "value": "Type-C" },
+          { "name": "Compatible", "value": "Android" },
+          { "name": "Bluetooth", "value": "5.3" },
+          { "name": "Controlled", "value": "Touch" }
+        ],
+        "addToCartText": "ADD TO CART",
+        "checkoutText": "CHECKOUT"
+      },
+      {
+        "image": "/images/img6.png",
+        "title": "DESIGN SLIDER",
+        "topic": "Aerphone",
+        "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, laborum cumque dignissimos quidem atque et eligendi aperiam voluptates beatae maxime.",
+        "detailTitle": "Aerphone GHTK",
+        "detailDescription": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, reiciendis suscipit nobis nulla animi, modi explicabo quod corrupti impedit illo, accusantium in eaque nam quia adipisci aut distinctio porro eligendi. Reprehenderit nostrum consequuntur ea! Accusamus architecto dolores modi ducimus facilis quas voluptatibus! Tempora ratione accusantium magnam nulla tenetur autem beatae.",
+        "specifications": [
+          { "name": "Used Time", "value": "6 hours" },
+          { "name": "Charging port", "value": "Type-C" },
+          { "name": "Compatible", "value": "Android" },
+          { "name": "Bluetooth", "value": "5.3" },
+          { "name": "Controlled", "value": "Touch" }
+        ],
+        "addToCartText": "ADD TO CART",
+        "checkoutText": "CHECKOUT"
+      }
+    ]
+  }
+  
+  

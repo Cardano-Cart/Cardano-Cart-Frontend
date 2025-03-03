@@ -24,7 +24,14 @@ import { UserContext } from '../../../utils/UserContext'; // Adjust the path as 
 
 
 const ProfilePage = () => {
-  const access_token = localStorage.getItem('accessToken');
+  const [access_token, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    // This will only run on the client side
+    const data = localStorage.getItem('accessToken');
+    setAccessToken(data);
+  }, []);// Assuming you're storing accessToken in localStorage
+  
   const { user, loading } = useContext(UserContext);
   
 
