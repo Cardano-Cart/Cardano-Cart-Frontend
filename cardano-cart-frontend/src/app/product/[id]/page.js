@@ -11,14 +11,89 @@ import {
   Container,
   Typography,
   Button,
+  Card,
   Alert,
   Snackbar,
   Box,
   Grid,
+  useTheme,
+  CardContent,
+  CardMedia,
+  CardActions,
   Paper,
+  useMediaQuery,
 } from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useRouter } from "next/navigation";
+
+const ProductCard = ({ id, name, image, price, onAddToCart }) => {
+  const { addItem } = useCart();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const router = useRouter();
+
+  const handleShowDetails = () => {
+    if (id) {
+      router.push(`/product/${id}`);
+    } else {
+      console.error("Product not available");
+    }
+  };
+
+  const handleAddToCart = () => {
+    // e.stopPropagation(); // Prevent the event from bubbling up
+    addItem({ id: id, name, price, image });
+    onAddToCart(`${name} added to cart successfully!`);
+  };
+
+  return (
+    <Card
+      onClick={handleShowDetails}
+      style={{ cursor: "pointer" }}
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: "10px",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        transition: "transform 0.3s ease-in-out",
+        "&:hover": {
+          transform: "scale(1.03)",
+        },
+      }}>
+      <CardMedia
+        component="img"
+        height={isMobile ? "120" : "150"}
+        image={image}
+        alt={name}
+        sx={{ objectFit: "cover", aspectRatio: "1 / 1" }}
+      />
+      <CardContent sx={{ flexGrow: 1, padding: 1 }}>
+        <Typography gutterBottom variant="body1" component="div" noWrap>
+          {name}
+        </Typography>
+        <Typography variant="body2" color="primary">
+          {price} ADA
+        </Typography>
+      </CardContent>
+      <CardActions sx={{ justifyContent: "center", padding: 1 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddToCart();
+          }}>
+          Add to Cart
+        </Button>
+      </CardActions>
+    </Card>
+  );
+};
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -27,6 +102,7 @@ export default function ProductPage() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("/placeholder.svg");
+  const [products, setProducts] = useState(current_products);
 
   useEffect(() => {
     if (product?.images?.[0]?.image_url) {
@@ -35,10 +111,10 @@ export default function ProductPage() {
   }, [product]);
 
   const extraImages = [
+    product?.images?.[0]?.image_url || "/placeholder.svg",
     "/images/Arrival1.jpg",
     "/images/Arrival6.jpg",
     "/images/Arrival7.jpg",
-    product?.images?.[0]?.image_url || "/placeholder.svg",
   ];
 
   useEffect(() => {
@@ -92,7 +168,7 @@ export default function ProductPage() {
   return (
     <>
       <Header />
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
           <Grid container spacing={4}>
             {/* Left Side: Product Image */}
@@ -114,12 +190,52 @@ export default function ProductPage() {
                   objectFit="contain"
                 />
               </Box>
+              {/* You reached here */}
+              {/* <Typography> */}
+              {extraImages.map((img, index) => (
+                <Image
+                  key={index}
+                  src={img}
+                  alt={`Extra ${index + 1}`}
+                  height={60}
+                  width={60}
+                  objectFit="cover"
+                  style={{
+                    cursor: "pointer",
+                    borderRadius: 2,
+                    border: selectedImage === img ? "1px solid black" : "none",
+                    padding: selectedImage === img ? "2px" : "0",
+                    margin: "5px",
+                  }}
+                  onClick={() => setSelectedImage(img)}
+                />
+              ))}
+              {/* </Typography> */}
             </Grid>
+            {/* <Typography>
+              {extraImages.map((img, index) => (
+                <Image
+                  key={index}
+                  src={img}
+                  alt={`Extra ${index + 1}`}
+                  height={60}
+                  width={60}
+                  objectFit="cover"
+                  style={{
+                    cursor: "pointer",
+                    borderRadius: 2,
+                    border: selectedImage === img ? "1px solid black" : "none",
+                    padding: selectedImage === img ? "2px" : "0",
+                  }}
+                  onClick={() => setSelectedImage(img)}
+                />
+              ))}
+            </Typography> */}
             {/* Right Side: Product Details */}
             <Grid item xs={12} md={6}>
               <Typography
                 component="h1"
-                variant="h4"
+                variant="h3"
                 fontWeight="bold"
                 gutterBottom>
                 {product.name}
@@ -136,7 +252,7 @@ export default function ProductPage() {
               <Typography variant="body1" paragraph>
                 {product.description}
               </Typography>
-              <Typography>
+              {/* <Typography>
                 {extraImages.map((img, index) => (
                   <Image
                     key={index}
@@ -155,7 +271,7 @@ export default function ProductPage() {
                     onClick={() => setSelectedImage(img)}
                   />
                 ))}
-              </Typography>
+              </Typography> */}
               <Button
                 variant="contained"
                 color="secondary"
@@ -169,32 +285,30 @@ export default function ProductPage() {
       </Container>
       <Container>
         <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
-                    <Typography
-                      variant="h4"
-                      gutterBottom
-                      align="center"
-                      sx={{
-                        mb: { xs: 2, sm: 3, md: 4 },
-                        fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" },
-                      }}
-                    >
-                      Featured Products
-                    </Typography>
-                    <Grid container spacing={2}>
-                      {products.slice(0, 8).map((product) => (
-                        <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
-                          <ProductCard
-                            id={product.id}
-                            name={product.name}
-                            image={product.images[0].image_url}
-                            price={product.price}
-                            onAddToCart={handleAddToCart}
-                          />
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
-                 
+          <Typography
+            variant="h4"
+            gutterBottom
+            align="center"
+            sx={{
+              mb: { xs: 2, sm: 3, md: 4 },
+              fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" },
+            }}>
+            Similar Products
+          </Typography>
+          <Grid container spacing={2}>
+            {products.slice(0, 8).map((product) => (
+              <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
+                <ProductCard
+                  id={product.id}
+                  name={product.name}
+                  image={product.images[0].image_url}
+                  price={product.price}
+                  onAddToCart={handleAddToCart}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </Container>
       <Snackbar
         open={alertOpen}
