@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Header from "../../_components/Header";
+import Footer from "../../_components/Footer";
 import { useCart } from "react-use-cart";
 import { current_products } from "../../data";
 import { getAllProducts } from "../../../../utils/_products";
@@ -20,9 +21,11 @@ import {
   CardContent,
   CardMedia,
   CardActions,
+  TextField,
   Paper,
   useMediaQuery,
 } from "@mui/material";
+Grid, Typography, Button, TextField, Box;
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useRouter } from "next/navigation";
@@ -117,6 +120,13 @@ export default function ProductPage() {
     "/images/Arrival7.jpg",
   ];
 
+  const [quantity, setQuantity] = useState(1);
+
+  const handleQuantityChange = (event) => {
+    const value = Math.max(1, parseInt(event.target.value) || 1);
+    setQuantity(value);
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       if (id) {
@@ -190,8 +200,6 @@ export default function ProductPage() {
                   objectFit="contain"
                 />
               </Box>
-              {/* You reached here */}
-              {/* <Typography> */}
               {extraImages.map((img, index) => (
                 <Image
                   key={index}
@@ -210,27 +218,7 @@ export default function ProductPage() {
                   onClick={() => setSelectedImage(img)}
                 />
               ))}
-              {/* </Typography> */}
             </Grid>
-            {/* <Typography>
-              {extraImages.map((img, index) => (
-                <Image
-                  key={index}
-                  src={img}
-                  alt={`Extra ${index + 1}`}
-                  height={60}
-                  width={60}
-                  objectFit="cover"
-                  style={{
-                    cursor: "pointer",
-                    borderRadius: 2,
-                    border: selectedImage === img ? "1px solid black" : "none",
-                    padding: selectedImage === img ? "2px" : "0",
-                  }}
-                  onClick={() => setSelectedImage(img)}
-                />
-              ))}
-            </Typography> */}
             {/* Right Side: Product Details */}
             <Grid item xs={12} md={6}>
               <Typography
@@ -252,38 +240,36 @@ export default function ProductPage() {
               <Typography variant="body1" paragraph>
                 {product.description}
               </Typography>
-              {/* <Typography>
-                {extraImages.map((img, index) => (
-                  <Image
-                    key={index}
-                    src={img}
-                    alt={`Extra ${index + 1}`}
-                    height={60}
-                    width={60}
-                    objectFit="cover"
-                    style={{
-                      cursor: "pointer",
-                      borderRadius: 2,
-                      border:
-                        selectedImage === img ? "1px solid black" : "none",
-                      padding: selectedImage === img ? "2px" : "0",
-                    }}
-                    onClick={() => setSelectedImage(img)}
-                  />
-                ))}
-              </Typography> */}
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ mt: 2, borderRadius: "8px", py: 1, px: 3 }}
-                onClick={() => handleAddToCart(product)}>
-                Add to Cart
-              </Button>
+              <Box display="flex" alignItems="center" gap={2} mt={2}>
+                <TextField
+                  type="number"
+                  label="Quantity"
+                  variant="outlined"
+                  size="small"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  sx={{ width: "100px" }}
+                  inputProps={{ min: 1 }}
+                />
+              </Box>
+              <div>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  sx={{ mt: 2, borderRadius: "8px", py: 1, px: 3 }}
+                  onClick={() => handleAddToCart({ ...product, quantity })}>
+                  Add to Cart
+                </Button>
+
+                <Typography variant="h6">
+                  Total: ₳{(quantity * product.price).toFixed(2)}
+                </Typography>
+              </div>
             </Grid>
           </Grid>
         </Paper>
       </Container>
-      <Container>
+      <Container maxWidth="xl">
         <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
           <Typography
             variant="h4"
@@ -310,6 +296,7 @@ export default function ProductPage() {
           </Grid>
         </Box>
       </Container>
+      <Footer />
       <Snackbar
         open={alertOpen}
         autoHideDuration={3000}
