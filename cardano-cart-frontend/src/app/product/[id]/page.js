@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Header from "../../_components/Header";
 import Footer from "../../_components/Footer";
+import CustomerReviews from "../../_components/CustomerReviews";
 import { useCart } from "react-use-cart";
 import { current_products } from "../../data";
 import { getAllProducts } from "../../../../utils/_products";
@@ -47,7 +48,7 @@ const ProductCard = ({ id, name, image, price, onAddToCart }) => {
 
   const handleAddToCart = () => {
     // e.stopPropagation(); // Prevent the event from bubbling up
-    addItem({ id: id, name, price, image });
+    addItem({ id: id, name, price, image, quantity });
     onAddToCart(`${name} added to cart successfully!`);
   };
 
@@ -161,8 +162,9 @@ export default function ProductPage() {
       id: product.id,
       name: product.name,
       price: product.price,
-      // image: product.images[0].image_url,
-      image: selectedImage,
+      image: product.images[0].image_url,
+      quantity: product.quantity ?? 1,
+      // image: selectedImage,
     });
     setAlertMessage(`${product.name} added to cart successfully!`);
     setAlertOpen(true);
@@ -190,34 +192,37 @@ export default function ProductPage() {
                   alignItems: "center",
                   backgroundColor: "#f5f5f5",
                   borderRadius: 2,
-                  height: 400,
+                  height: 410,
                 }}>
                 <Image
                   src={selectedImage}
                   alt={product.name}
-                  height={350}
-                  width={350}
+                  height={400}
+                  width={400}
                   objectFit="contain"
                 />
               </Box>
-              {extraImages.map((img, index) => (
-                <Image
-                  key={index}
-                  src={img}
-                  alt={`Extra ${index + 1}`}
-                  height={60}
-                  width={60}
-                  objectFit="cover"
-                  style={{
-                    cursor: "pointer",
-                    borderRadius: 2,
-                    border: selectedImage === img ? "1px solid black" : "none",
-                    padding: selectedImage === img ? "2px" : "0",
-                    margin: "5px",
-                  }}
-                  onClick={() => setSelectedImage(img)}
-                />
-              ))}
+              <Box display="flex" justifyContent="center" alignItems="center">
+                {extraImages.map((img, index) => (
+                  <Image
+                    key={index}
+                    src={img}
+                    alt={`Extra ${index + 1}`}
+                    height={60}
+                    width={60}
+                    objectFit="cover"
+                    style={{
+                      cursor: "pointer",
+                      borderRadius: 2,
+                      border:
+                        selectedImage === img ? "1px solid black" : "none",
+                      padding: selectedImage === img ? "2px" : "0",
+                      margin: "5px",
+                    }}
+                    onClick={() => setSelectedImage(img)}
+                  />
+                ))}
+              </Box>
             </Grid>
             {/* Right Side: Product Details */}
             <Grid item xs={12} md={6}>
@@ -237,9 +242,42 @@ export default function ProductPage() {
                 gutterBottom>
                 Category: {product.category}
               </Typography>
-              <Typography variant="body1" paragraph>
-                {product.description}
+              <Typography
+                variant="subtitle1"
+                color="text.secondary"
+                gutterBottom>
+                Description
               </Typography>
+              <Box
+                sx={{
+                  maxHeight: "150px",
+                  overflow: "auto",
+                  "&::-webkit-scrollbar": {
+                    width: "4px", // Thin scrollbar
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    backgroundColor: "#888", // Scrollbar color
+                    borderRadius: "8px",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    backgroundColor: "#555", // Darker on hover
+                  },
+                }}>
+                <Typography
+                  variant="body1"
+                  sx={{ textAlign: "justify", paddingRight: "8px" }}
+                  paragraph>
+                  {/* {product.description} */}
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum.
+                </Typography>
+              </Box>
               <Box display="flex" alignItems="center" gap={2} mt={2}>
                 <TextField
                   type="number"
@@ -252,23 +290,34 @@ export default function ProductPage() {
                   inputProps={{ min: 1 }}
                 />
               </Box>
-              <div>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mt="auto"
+                pb={2}>
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Total
+                  </Typography>
+                  <Typography variant="h4" fontWeight="bold">
+                    ₳{(quantity * product.price).toFixed(2)}
+                  </Typography>
+                </Box>
+
                 <Button
                   variant="contained"
                   color="secondary"
-                  sx={{ mt: 2, borderRadius: "8px", py: 1, px: 3 }}
+                  sx={{ borderRadius: "8px", py: 1, px: 3 }}
                   onClick={() => handleAddToCart({ ...product, quantity })}>
                   Add to Cart
                 </Button>
-
-                <Typography variant="h6">
-                  Total: ₳{(quantity * product.price).toFixed(2)}
-                </Typography>
-              </div>
+              </Box>
             </Grid>
           </Grid>
         </Paper>
       </Container>
+      <CustomerReviews />
       <Container maxWidth="xl">
         <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
           <Typography
