@@ -35,7 +35,6 @@ const ProductCard = ({ id, name, image, price, onAddToCart }) => {
   const { addItem } = useCart();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const router = useRouter();
 
   const handleShowDetails = () => {
@@ -107,6 +106,16 @@ export default function ProductPage() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("/placeholder.svg");
   const [products, setProducts] = useState(current_products);
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } =
+      e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setHoverPosition({ x, y });
+  };
 
   useEffect(() => {
     if (product?.images?.[0]?.image_url) {
@@ -317,7 +326,169 @@ export default function ProductPage() {
           </Grid>
         </Paper>
       </Container>
-      <CustomerReviews />
+      <Container>
+        <Grid container spacing={4}>
+          {/* Left Side: Product Image */}
+          <Grid item xs={12} md={6}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#f5f5f5",
+                borderRadius: 2,
+                height: 410,
+                position: "relative",
+              }}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}>
+              <Image
+                src={selectedImage}
+                alt={product.name}
+                height={400}
+                width={400}
+                objectFit="contain"
+              />
+            </Box>
+
+            {/* Extra Images */}
+            <Box display="flex" justifyContent="center" alignItems="center">
+              {extraImages.map((img, index) => (
+                <Image
+                  key={index}
+                  src={img}
+                  alt={`Extra ${index + 1}`}
+                  height={60}
+                  width={60}
+                  objectFit="cover"
+                  style={{
+                    cursor: "pointer",
+                    borderRadius: 2,
+                    border: selectedImage === img ? "1px solid black" : "none",
+                    padding: selectedImage === img ? "2px" : "0",
+                    margin: "5px",
+                  }}
+                  onClick={() => setSelectedImage(img)}
+                />
+              ))}
+            </Box>
+          </Grid>
+
+          {/* Right Side: Product Details & Zoomed Image */}
+          <Grid item xs={12} md={6}>
+            {/* Zoomed Image on Hover */}
+            {isHovering && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10%",
+                  transform: "translateY(-50%)",
+                  width: 300,
+                  height: 300,
+                  overflow: "hidden",
+                  borderRadius: 2,
+                  border: "2px solid #ddd",
+                  backgroundColor: "#fff",
+                  boxShadow: "0px 4px 10px rgba(0,0,0,0.2)",
+                }}>
+                <Image
+                  src={selectedImage}
+                  alt="Zoomed"
+                  width={800} // Zoomed-in size
+                  height={800}
+                  style={{
+                    position: "absolute",
+                    top: `${-hoverPosition.y * 4}px`,
+                    left: `${-hoverPosition.x * 4}px`,
+                  }}
+                />
+              </Box>
+            )}
+
+            <Typography
+              component="h1"
+              variant="h3"
+              fontWeight="bold"
+              gutterBottom>
+              {product.name}
+            </Typography>
+            <Typography variant="h5" color="primary" gutterBottom>
+              ₳{product.price}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              Category: {product.category}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              Description
+            </Typography>
+            <Box
+              sx={{
+                maxHeight: "150px",
+                overflow: "auto",
+                "&::-webkit-scrollbar": {
+                  width: "4px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#888",
+                  borderRadius: "8px",
+                },
+                "&::-webkit-scrollbar-thumb:hover": {
+                  backgroundColor: "#555",
+                },
+              }}>
+              <Typography
+                variant="body1"
+                sx={{ textAlign: "justify", paddingRight: "8px" }}
+                paragraph>
+                {product.description}
+              </Typography>
+            </Box>
+
+            {/* Quantity & Add to Cart */}
+            <Box display="flex" alignItems="center" gap={2} mt={2}>
+              <TextField
+                type="number"
+                label="Quantity"
+                variant="outlined"
+                size="small"
+                value={quantity}
+                onChange={handleQuantityChange}
+                sx={{ width: "100px" }}
+                inputProps={{ min: 1 }}
+              />
+            </Box>
+
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mt="auto"
+              pb={2}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Total
+                </Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  ₳{(quantity * product.price).toFixed(2)}
+                </Typography>
+              </Box>
+
+              <Button
+                variant="contained"
+                color="secondary"
+                sx={{ borderRadius: "8px", py: 1, px: 3 }}
+                onClick={() =>
+                  console.log("Add to cart", { ...product, quantity })
+                }>
+                Add to Cart
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+
       <Container maxWidth="xl">
         <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
           <Typography
@@ -344,6 +515,19 @@ export default function ProductPage() {
             ))}
           </Grid>
         </Box>
+      </Container>
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          align="center"
+          sx={{
+            mb: { xs: 2, sm: 3, md: 4 },
+            fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" },
+          }}>
+          Customer Reviews
+        </Typography>
+        <CustomerReviews />
       </Container>
       <Footer />
       <Snackbar

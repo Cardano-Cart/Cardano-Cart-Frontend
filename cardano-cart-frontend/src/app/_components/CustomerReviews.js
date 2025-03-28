@@ -1,5 +1,10 @@
-import { Box, Typography, Button, LinearProgress, Avatar } from "@mui/material";
-import { Star, StarBorder } from "@mui/icons-material";
+import React from "react";
+import Rating from "@mui/material/Rating";
+import { styled } from "@mui/material/styles";
+import { Box, Grid, Typography, Button, Avatar } from "@mui/material";
+import LinearProgress, {
+  linearProgressClasses,
+} from "@mui/material/LinearProgress";
 
 const reviews = [
   {
@@ -33,87 +38,94 @@ const ratings = [
   { stars: 1, percentage: 9 },
 ];
 
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[200],
+    ...theme.applyStyles("dark", {
+      backgroundColor: theme.palette.grey[800],
+    }),
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: "#1a90ff",
+    ...theme.applyStyles("dark", {
+      backgroundColor: "#308fe8",
+    }),
+  },
+}));
+
 export default function CustomerReviews() {
+  const [value, setValue] = React.useState(2);
   return (
     <Box className=" p-6 rounded-lg shadow-md">
-      <Typography variant="h6" fontWeight="bold">
-        Customer Reviews
-      </Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          {/* Title */}
+          <Typography variant="h5" fontWeight="bold">
+            Reviews Summary
+          </Typography>
 
-      {/* Star Rating Overview */}
-      <Box className="flex items-center gap-1 my-2">
-        {Array(4)
-          .fill()
-          .map((_, i) => (
-            <Star key={i} className="text-yellow-500" />
-          ))}
-        <StarBorder className="text-yellow-500" />
-        <Typography className="text-gray-600 ml-2">
-          Based on 1624 reviews
-        </Typography>
-      </Box>
-
-      {/* Rating Distribution */}
-      {ratings.map((item) => (
-        <Box key={item.stars} className="flex items-center gap-2 my-1">
-          <Typography className="w-4 text-gray-600">{item.stars}</Typography>
-          <Star className="text-yellow-500" fontSize="small" />
-          <LinearProgress
-            variant="determinate"
-            value={item.percentage}
-            className="w-full"
-          />
-          <Typography className="text-gray-600">{item.percentage}%</Typography>
-        </Box>
-      ))}
-
-      {/* Share Your Thoughts */}
-      <Box className="mt-4">
-        <Typography fontWeight="bold">Share your thoughts</Typography>
-        <Typography className="text-gray-600">
-          If you've used this product, share your thoughts with other customers
-        </Typography>
-        <Button variant="outlined" className="mt-2">
-          Write a review
-        </Button>
-      </Box>
-
-      {/* Customer Reviews List */}
-      <Box className="mt-6 max-h-72 overflow-auto pr-2">
-        {reviews.map((review, index) => (
-          <Box key={index} className="border-b pb-4 mb-4">
-            <Box className="flex items-center gap-3">
-              <Avatar src={review.avatar} alt={review.name} />
-              <Box>
-                <Typography fontWeight="bold">{review.name}</Typography>
-                <Box className="flex">
-                  {Array(review.rating)
-                    .fill()
-                    .map((_, i) => (
-                      <Star
-                        key={i}
-                        className="text-yellow-500"
-                        fontSize="small"
-                      />
-                    ))}
-                  {Array(5 - review.rating)
-                    .fill()
-                    .map((_, i) => (
-                      <StarBorder
-                        key={i}
-                        className="text-yellow-500"
-                        fontSize="small"
-                      />
-                    ))}
-                </Box>
-              </Box>
-            </Box>
-            <Typography className="text-gray-600 italic mt-2">
-              {review.review}
-            </Typography>
+          {/* Star Rating Overview */}
+          <Box display="flex" alignItems="center" gap={1} my={2}>
+            <Rating name="read-only" value={value} readOnly />
+            <Typography color="textSecondary">Based on 1624 reviews</Typography>
           </Box>
-        ))}
-      </Box>
+
+          {/* Rating Distribution */}
+          {ratings.map((item) => (
+            <Box key={item.stars} display="flex" alignItems="center" my={1}>
+              <Typography
+                sx={{ width: 20, textAlign: "center", color: "#616161" }}>
+                {item.stars}
+              </Typography>
+              <Rating name="customized-10" defaultValue={1} max={1} readOnly />
+              <BorderLinearProgress value={item.percentage} />
+              <Typography sx={{ minWidth: 35, color: "#616161" }}>
+                {item.percentage}%
+              </Typography>
+            </Box>
+          ))}
+
+          {/* Share Your Thoughts Section */}
+          <Box mt={4}>
+            <Typography fontWeight="bold">Share your thoughts</Typography>
+            <Typography color="textSecondary">
+              If you've used this product, share your thoughts with other
+              customers
+            </Typography>
+            <Button variant="contained" sx={{ mt: 2 }}>
+              Write a review
+            </Button>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Box sx={{ mt: 6, maxHeight: "72vh", overflow: "auto", pr: 2 }}>
+            {reviews.map((review, index) => (
+              <Box
+                key={index}
+                sx={{ borderBottom: "1px solid #e0e0e0", pb: 4, mb: 4 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Avatar
+                    src={review.avatar}
+                    alt={review.name}
+                    sx={{ width: 48, height: 48 }}
+                  />
+                  <Box>
+                    <Typography fontWeight="bold">{review.name}</Typography>
+                    <Rating name="read-only" value={review.rating} readOnly />
+                  </Box>
+                </Box>
+                <Typography
+                  sx={{ color: "#616161", fontStyle: "italic", mt: 2 }}>
+                  {review.review}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Grid>
+      </Grid>
     </Box>
   );
 }
