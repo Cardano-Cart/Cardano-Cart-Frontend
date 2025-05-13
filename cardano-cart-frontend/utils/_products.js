@@ -6,14 +6,12 @@ const BASE_URL = 'https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1';
 
 
 // Function to get all products
-export const getAllProducts = async (access_token) => {
+export const getAllProducts = async () => {
   const endpoint = `${BASE_URL}/products/`;
   //console.log(`Bearer ${access_token}`)
   try {
     const response = await axios.get(endpoint, {
-      headers: {
-        Authorization: `Bearer ${access_token}`
-      }
+      
     });
     //console.log(response.data);
     return response.data;

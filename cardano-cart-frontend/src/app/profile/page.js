@@ -47,6 +47,7 @@ const ProfilePage = () => {
     email: 'jamesyawanokye17@example.com',
     address: 'Accra',
     phone: '+233 594569164',
+    wallet_id: "",
   });
 
   useEffect(() => {
@@ -56,8 +57,9 @@ const ProfilePage = () => {
         email: user.email,
         address: user.address,
         phone: user.phone_number,
+        wallet_id: user.wallet_id || "",
       });
-      setAvatarUrl(user.avatar);
+      setAvatarUrl(user.avatar_url);
     }
   }, [user, loading]);
 
@@ -74,6 +76,7 @@ const ProfilePage = () => {
               email: fetchedUser?.email,
               address: fetchedUser?.address,
               phone: fetchedUser?.phone_number,
+              wallet_id: fetchedUser?.wallet_id || "",
             });
             if (fetchedUser?.avatar && fetchedUser?.avatar?.length > 0) {
               setAvatarUrl(fetchedUser?.avatar);
@@ -121,6 +124,7 @@ const ProfilePage = () => {
     updatedUserForm.append('email', profile.email);
     updatedUserForm.append('address', profile.address);
     updatedUserForm.append('phone_number', profile.phone);
+    updatedUserForm.append("wallet_id", profile.wallet_id);
 
     for (const [key, value] of updatedUserForm.entries()) {
       console.log(`${key}: ${value}`);
@@ -289,6 +293,19 @@ const ProfilePage = () => {
                     value={profile.phone}
                     onChange={handleChange}
                     disabled={!editing}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Cardano ADA Address"
+                    name="wallet_id"
+                    value={profile.wallet_id}
+                    onChange={handleChange}
+                    disabled={!editing}
+                    placeholder="addr1..."
+                    helperText="Enter your Cardano wallet address starting with 'addr1'"
+                    
                   />
                 </Grid>
               </Grid>

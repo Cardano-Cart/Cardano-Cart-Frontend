@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["localhost", "charming-ninnetta-knust-028ea081.koyeb.app"],
+    domains: ["localhost", "charming-ninnetta-knust-028ea081.koyeb.app","res.cloudinary.com"],
   },
   webpack: function (config, options) {
     config.experiments = {

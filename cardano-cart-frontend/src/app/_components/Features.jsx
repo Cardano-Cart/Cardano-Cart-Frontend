@@ -9,6 +9,105 @@ const Carousel = () => {
   const listRef = useRef(null)
   const carouselRef = useRef(null)
   const [index, setIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const handleNavigation = (direction) => {
+   
+
+    const carousel = carouselRef.current
+    if (!carousel) return
+
+    // Remove any existing animation classes
+    carousel.classList.remove("next", "prev")
+    
+
+    // Add the appropriate animation class
+    if (direction === "next") {
+      
+      carousel.classList.add("next")
+    } else {
+      carousel.classList.add("prev")
+    }
+
+    // Wait for animation to complete before updating DOM
+    setTimeout(() => {
+      const listHTML = listRef.current
+      if (!listHTML) {
+        setIsAnimating(false)
+        return
+      }
+
+      const items = listHTML.querySelectorAll(".item")
+
+      if (direction === "next") {
+        // Move the first item to the end
+        const firstItem = items[0]
+        listHTML.appendChild(firstItem)
+
+        // Update index
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselData.items.length)
+      } else {
+        // Move the last item to the beginning
+        const lastItem = items[items.length - 1]
+        listHTML.prepend(lastItem)
+
+        // Update index
+        setCurrentIndex((prevIndex) => (prevIndex === 0 ? carouselData.items.length - 1 : prevIndex - 1))
+      }
+
+      // Remove animation class
+      carousel.classList.remove("next", "prev")
+      setIsAnimating(false)
+    }, 600) // Match this to your animation duration
+  }
+  const toggleDetail = (show) => {
+    const carousel = carouselRef.current
+    if (!carousel) return
+
+    carousel.classList.remove("next", "prev")
+
+    if (show) {
+      carousel.classList.add("showDetail")
+    } else {
+      carousel.classList.remove("showDetail")
+    }
+  }
+
+  useEffect(() => {
+    // Set up event listeners
+    const nextButton = document.getElementById("next")
+    const prevButton = document.getElementById("prev")
+    const seeMoreButtons = document.querySelectorAll(".seeMore")
+    const backButton = document.getElementById("back")
+
+    // Define event handlers
+    const handleNextClick = () => handleNavigation("next")
+    const handlePrevClick = () => handleNavigation("prev")
+    const handleSeeMoreClick = () => toggleDetail(true)
+    const handleBackClick = () => toggleDetail(false)
+
+    // Add event listeners
+    if (nextButton) nextButton.addEventListener("click", handleNextClick)
+    if (prevButton) prevButton.addEventListener("click", handlePrevClick)
+
+    seeMoreButtons.forEach((button) => {
+      button.addEventListener("click", handleSeeMoreClick)
+    })
+
+    if (backButton) backButton.addEventListener("click", handleBackClick)
+
+    // Clean up event listeners
+    return () => {
+      if (nextButton) nextButton.removeEventListener("click", handleNextClick)
+      if (prevButton) prevButton.removeEventListener("click", handlePrevClick)
+
+      seeMoreButtons.forEach((button) => {
+        button.removeEventListener("click", handleSeeMoreClick)
+      })
+
+      if (backButton) backButton.removeEventListener("click", handleBackClick)
+    }
+  }, [index]) // Empty dependency array means this runs once on mount
  function nextSlide() {
   setIndex((prevIndex) => (prevIndex + 1) % carouselData.items.length);
 }
@@ -17,68 +116,7 @@ function prevSlide() {
   setIndex((prevIndex) => (prevIndex - 1 + carouselData.items.length) % carouselData.items.length);
 }
 
-  useEffect(() => {
-    const nextButton = document.getElementById("next")
-
-    const prevButton = document.getElementById("prev")
-    const carousel = carouselRef.current
-    const listHTML = listRef.current
-    const seeMoreButtons = document.querySelectorAll(".seeMore")
-    const backButton = document.getElementById("back")
-
-    let unAcceppClick
-
-    const showSlider = (type) => {
-      if (!listHTML || !carousel) return
-
-      nextButton.style.pointerEvents = "none"
-      prevButton.style.pointerEvents = "none"
-
-      carousel.classList.remove("next", "prev")
-      const items = listHTML.querySelectorAll(".carousel .list .item")
-      let newIndex = index;
-      if (type === "next") {
-        nextSlide()
-        listHTML.appendChild(items[0]);
-        carousel.classList.add("next")
-        newIndex = (index + 1) % items.length;
-      } else {
-        prevSlide()
-        listHTML.prepend(items[items.length - 1]);
-        newIndex = (index - 1 + items.length) % items.length;
-        carousel.classList.add("prev")
-      }
-
-      clearTimeout(unAcceppClick)
-      unAcceppClick = setTimeout(() => {
-        nextButton.style.pointerEvents = "auto"
-        prevButton.style.pointerEvents = "auto"
-      }, 1000)
-    }
-
-    nextButton.addEventListener("click", () => showSlider("next"))
-    prevButton.addEventListener("click", () => showSlider("prev"))
-
-    seeMoreButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        carousel.classList.remove("next", "prev")
-        carousel.classList.add("showDetail")
-      })
-    })
-
-    backButton.addEventListener("click", () => {
-      carousel.classList.remove("showDetail")
-    })
-
-    return () => {
-      nextButton.removeEventListener("click", () => showSlider("next"))
-      prevButton.removeEventListener("click", () => showSlider("prev"))
-      seeMoreButtons.forEach((button) => {
-        button.removeEventListener("click", () => {})
-      })
-      backButton.removeEventListener("click", () => {})
-    }
-  }, [])
+  
 
   return (
     <div className="carousel" ref={carouselRef}>
@@ -86,7 +124,7 @@ function prevSlide() {
       <div className="list" ref={listRef}>
         {carouselData.items.map((item, index) => (                                                                                                                
           <div key={index} className="item">
-            <Image src={item.image || "/placeholder.svg"} alt={item.title} width={400} height={430} />
+            <Image src={item.image || "/placeholder.svg"} alt={item.title} width={300} height={330} />
             <div className="introduce">
               <div className="title">{item.title}</div>
               <div className="topic">{item.topic}</div>
