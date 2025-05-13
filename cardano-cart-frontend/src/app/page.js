@@ -420,7 +420,7 @@ const Home = () => {
                   Cardano Cart
                 </Typography>
                 <Typography variant="body2">
-                  Revolutionizing e-commerce with Cardano blockchain technology.
+                  Revolutionizing e-commerce with Cardano Blockchain technology.
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
