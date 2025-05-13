@@ -459,30 +459,8 @@ export default function ProductPage() {
 
       <Container maxWidth="xl">
         <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            align="center"
-            sx={{
-              mb: { xs: 2, sm: 3, md: 4 },
-              fontSize: { xs: "1.75rem", sm: "2rem", md: "2.25rem" }
-            }}
-          >
-            Similar Products
-          </Typography>
-          <Grid container spacing={2}>
-            {products.slice(0, 8).map(product => (
-              <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
-                <ProductCard
-                  id={product.id}
-                  name={product.name}
-                  image={product.images[0]?.image_url}
-                  price={product.price}
-                  onAddToCart={handleAddToCart}
-                />
-              </Grid>
-            ))}
-          </Grid>
+          
+         
           <Feature/>
         </Box>
       </Container>
