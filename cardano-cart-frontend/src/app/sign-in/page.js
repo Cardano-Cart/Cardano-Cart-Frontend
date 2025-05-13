@@ -28,6 +28,8 @@ const SignInAnimation = dynamic(() => import('../_components/SignInAnimation'));
 const DarkModeRoundedIcon = dynamic(() => import('@mui/icons-material/DarkModeRounded'));
 const LightModeRoundedIcon = dynamic(() => import('@mui/icons-material/LightModeRounded'));
 
+import GoogleLoginButton from '../_components/GoogleLoginButton';
+
 import { Auth } from '../../../utils/_auth';
 
 const BASE_URL = 'https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1';
@@ -246,11 +248,13 @@ export  default function JoySignInSideTemplate() {
                   <Button type="submit" fullWidth disabled={isLoading}>
                 {isLoading ? 'Signing in...' : 'Sign in'}
               </Button>
+          
                   </Link>
                 </Stack>
               </form>
             </Stack>
           </Box>
+              <GoogleLoginButton />
           <Box component="footer" sx={{ py: 3 }}>
             <Typography level="body-xs" sx={{ textAlign: 'center' }}>
               © Cardano Cart {new Date().getFullYear()}

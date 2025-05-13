@@ -1,5 +1,5 @@
 @import "tailwindcss/base";
-
+@import "tailwindcss";
 @import "tailwindcss/components";
 
 @import "tailwindcss/utilities";
@@ -7,7 +7,43 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --swiper-theme-color: #3f51b5;
+  --swiper-pagination-bullet-inactive-color: #e0e0e0;
+  --swiper-pagination-bullet-inactive-opacity: 1;
+  --swiper-pagination-bullet-size: 12px;
+  --swiper-pagination-bullet-horizontal-gap: 6px;
 }
+/* Swiper custom styles */
+.products-swiper {
+  width: 100%;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.swiper-slide {
+  height: auto;
+}
+
+/* Custom pagination bullets */
+.custom-bullet {
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background-color: #e0e0e0;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring animation */
+  display: inline-block;
+}
+
+.custom-bullet-active {
+  width: 30px; /* Elongated when active */
+  background-color: #3f51b5;
+  transform: scale(1.1); /* Slight scale effect */
+}
+
+ 
 
 /* @media (prefers-color-scheme: dark) {
   :root {

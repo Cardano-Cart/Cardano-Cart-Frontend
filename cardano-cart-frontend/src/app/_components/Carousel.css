@@ -399,6 +399,9 @@
     .carousel .list{
         height: 100%;
     }
+    .description{
+        color: white;
+    }
     .carousel .list .item:nth-child(2) .introduce{
         width: 50%;
     }
@@ -429,7 +432,7 @@
         width: 80%;
     }
     .carousel.showDetail .list .item:nth-child(2) .detail{
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(0px);
         font-size: small;
     }
     .carousel .list .item:nth-child(2) .introduce .des,

@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import Header from "./_components/Header";
+import Banner from "./_components/pages/home/banner";
 import theme from "./_components/theme";
 import { color, motion } from "framer-motion";
 import Slider from "react-slick";
@@ -27,10 +28,15 @@ import "slick-carousel/slick/slick-theme.css";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { useCart } from "react-use-cart";
 import { current_products } from "./data";
+import Feature from "./_components/pages/home/Category";
 import Carousel from "./_components/Features";
+import ProductShowcase from "./_components/ProductShowcase";
 import { getAllProducts } from "../../utils/_products";
 // import { useRouter } from "next/compat/router";
 import { useRouter } from "next/navigation";
+import CarouselBanner from "./_components/Carousel-Banner";
+import Features from "@/app/_components/pages/home/LatestProduct"
+
 
 const fadeInEffect = {
   hidden: { opacity: 0, y: 20 },
@@ -192,7 +198,9 @@ const Home = () => {
     <>
       <ThemeProvider theme={theme}>
         <Header />
-        <Container maxWidth="xl" sx={{ mt: { xs: 0, sm: 0, md: 0 } }}>
+        <Banner />
+        <Feature />
+                  {/*  <Container maxWidth="xl" sx={{ mt: { xs: 0, sm: 0, md: 0 } }}>
          
           <Box
             sx={{
@@ -295,7 +303,7 @@ const Home = () => {
               </Slider>
             </Box>
           </Box>
-          
+
           <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
             <Typography
               variant="h4"
@@ -389,9 +397,14 @@ const Home = () => {
                 Subscribe
               </Button>
             </Box>
+            
           </Box>
-        </Container>
-
+         
+        </Container>*/}
+        <CarouselBanner/>
+        <ProductShowcase/>
+        
+        <Features/>
         <Box
           component="footer"
           sx={{
@@ -430,6 +443,8 @@ const Home = () => {
             </Box>
           </Container>
         </Box>
+
+        
       </ThemeProvider>
       <Snackbar
         open={alertOpen}
