@@ -332,11 +332,6 @@ export default function Home() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-   
-     
-
-      
-
       {/* Similar Product */}
       <Box sx={{ my: 6 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>

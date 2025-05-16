@@ -256,13 +256,14 @@ export default function Home({ category }) {
   // export default function SimilarProducts({ category }) {
   const swiperRef = useRef(null);
   const [products, setProducts] = useState(current_products);
+  // const [products, setProducts] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState("Black");
   const [quantity, setQuantity] = useState(1);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [filteredProducts, setFilteredProducts] = useState([]);
 
   // useEffect(() => {
   //   const fetchProducts = async () => {
@@ -284,13 +285,16 @@ export default function Home({ category }) {
     const fetchProducts = async () => {
       try {
         const fetchedProducts = await getAllProducts();
+        // console.log("Filtered Keklem2:", fetchedProducts);
         setProducts(fetchedProducts);
 
         // Filter products by category prop here:
-        const filtered = fetchedProducts.filter(
-          (product) => product.category === category
+        const filteredProducts = fetchedProducts.filter(
+          (product) =>
+            product.category_name?.toLowerCase() === category?.toLowerCase()
         );
-        setFilteredProducts(filtered);
+        // console.log("Filtered Keklem:", filteredProducts);
+        setFiltered(filteredProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -401,7 +405,7 @@ export default function Home({ category }) {
             className="products-swiper"
             grabCursor={true}
             style={{ padding: "10px 0 40px" }}>
-            {filteredProducts.slice(0, 8).map((product) => (
+            {filtered.slice(0, 8).map((product) => (
               <SwiperSlide key={product.id}>
                 <ProductCard
                   onClick={() =>

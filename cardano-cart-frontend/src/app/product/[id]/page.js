@@ -460,7 +460,9 @@ export default function ProductPage() {
         )}
       </Box>
 
-      <Container maxWidth="xl">
+      <Container
+        maxWidth="xl"
+        onClick={() => console.log(product.category_name)}>
         <Box sx={{ my: { xs: 4, sm: 6, md: 8 } }}>
           {/* New */}
           <Feature category={product.category_name} />
