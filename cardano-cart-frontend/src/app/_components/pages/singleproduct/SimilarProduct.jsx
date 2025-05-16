@@ -46,6 +46,9 @@ const ServiceCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
+const API_BASE_URL =
+  "https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1";
+
 const CategoryCard = styled(Card)(({ theme }) => ({
   border: "1px solid #eaeaea",
   borderRadius: 4,
@@ -252,12 +255,13 @@ const allProducts = [
   },
 ];
 
-export default function Home({ category }) {
+export default function Home({ category, productId }) {
   // export default function SimilarProducts({ category }) {
   const swiperRef = useRef(null);
   const [products, setProducts] = useState(current_products);
   // const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState("Black");
@@ -302,6 +306,22 @@ export default function Home({ category }) {
 
     fetchProducts();
   }, [category]);
+
+  useEffect(() => {
+    const fetchAverageRating = async () => {
+      const res = await fetch(`${API_BASE_URL}/${productId}/reviews`);
+      const data = await res.json();
+
+      const avgRating =
+        data.length > 0
+          ? data.reduce((sum, review) => sum + review.rating, 0) / data.length
+          : 0;
+
+      setAverageRating(avgRating);
+    };
+
+    fetchAverageRating();
+  }, [productId]);
 
   const handlePrev = () => {
     if (swiperRef.current && swiperRef.current.swiper) {
@@ -454,13 +474,17 @@ export default function Home({ category }) {
                   </ProductImageContainer>
                   <CardContent sx={{ p: 2 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                      <Rating value={product.rating} readOnly size="small" />
-                      <Typography
+                      <Rating
+                        value={averageRating.toFixed(1)}
+                        readOnly
+                        size="small"
+                      />
+                      {/* <Typography
                         variant="body2"
                         color="text.secondary"
                         sx={{ ml: 1 }}>
                         ({product.reviews})
-                      </Typography>
+                      </Typography> */}
                     </Box>
                     <Typography
                       variant="body2"
