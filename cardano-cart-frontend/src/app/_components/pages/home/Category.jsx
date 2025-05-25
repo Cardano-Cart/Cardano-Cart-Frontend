@@ -38,7 +38,7 @@ import "swiper/css"
 import "swiper/css/pagination"
 // Import required modules
 import { Pagination, Navigation, Autoplay } from "swiper/modules"
-import { productRating } from '@/app/utils/productRating';
+import { productRating } from '../../../../../utils/productRating';
 
 // Styled components
 const ServiceCard = styled(Card)(({ theme }) => ({

@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1";
+const API_BASE_URL = "https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1"; 
 
 export const productRating = async (productId) => {
   try {
@@ -7,13 +7,13 @@ export const productRating = async (productId) => {
 
     const reviewsData = await response.json();
 
-    const avgRating =
+    const averagRating =
       reviewsData.length > 0
         ? reviewsData.reduce((sum, review) => sum + review.rating, 0) / reviewsData.length
         : 0;
 
     return {
-      averageRating: Number(avgRating.toFixed(1)),
+      averageRating: Number(averagRating.toFixed(1)),
     };
   } catch (err) {
     console.error("Error fetching reviews:", err);
