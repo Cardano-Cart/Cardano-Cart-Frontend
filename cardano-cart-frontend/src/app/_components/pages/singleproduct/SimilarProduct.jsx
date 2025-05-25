@@ -38,6 +38,10 @@ import "swiper/css";
 import "swiper/css/pagination";
 // Import required modules
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
+// import { productRating } from '@/utils/productRating';
+import { productRating } from '@/app/utils/productRating';
+// import { fetchAverageRating } from 'cardano-cart-frontend/utils/productRating'
+// 
 
 // Styled components
 const ServiceCard = styled(Card)(({ theme }) => ({
@@ -261,67 +265,84 @@ export default function Home({ category, productId }) {
   const [products, setProducts] = useState(current_products);
   // const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [averageRating, setAverageRating] = useState(0);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState("Black");
   const [quantity, setQuantity] = useState(1);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  
+  const [averageRating, setAverageRating] = useState(0);
+
+
+  useEffect(() => {
+    const getRating = async () => {
+      const { averageRating, error } = await productRating(productId);
+      if (error) {
+        console.error("Error fetching rating:", error);
+      } else {
+        console.log("Average Rating:", averageRating);
+        setAverageRating(averageRating); 
+      }
+    };
+
+    if (productId) {
+      getRating();
+    }
+  }, [productId]);
+
 
   // useEffect(() => {
   //   const fetchProducts = async () => {
-  //     //console.log(access_token); // should log access_token correctly
-
   //     try {
   //       const fetchedProducts = await getAllProducts();
+  //       // console.log("Filtered Keklem2:", fetchedProducts);
   //       setProducts(fetchedProducts);
-  //       console.log(fetchedProducts);
-  //       //console.log(fetchedProducts)
+
+  //       // Filter products by category prop here:
+  //       const filteredProducts = fetchedProducts.filter(
+  //         (product) =>
+  //           product.category_name?.toLowerCase() === category?.toLowerCase()
+  //       );
+  //       // console.log("Filtered Keklem:", filteredProducts);
+  //       setFiltered(filteredProducts);
   //     } catch (error) {
   //       console.error("Error fetching products:", error);
   //     }
   //   };
 
   //   fetchProducts();
-  // }, []);
+  // }, [category]);
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const fetchedProducts = await getAllProducts();
-        // console.log("Filtered Keklem2:", fetchedProducts);
-        setProducts(fetchedProducts);
+  const fetchProducts = async () => {
+    try {
+      const fetchedProducts = await getAllProducts();
 
-        // Filter products by category prop here:
-        const filteredProducts = fetchedProducts.filter(
-          (product) =>
-            product.category_name?.toLowerCase() === category?.toLowerCase()
-        );
-        // console.log("Filtered Keklem:", filteredProducts);
-        setFiltered(filteredProducts);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
+      const productsWithRatings = await Promise.all(
+        fetchedProducts.map(async (product) => {
+          const { averageRating } = await productRating(product.id);
+          return { ...product, averageRating };
+        })
+      );
 
-    fetchProducts();
-  }, [category]);
+      setProducts(productsWithRatings);
 
-  useEffect(() => {
-    const fetchAverageRating = async () => {
-      const res = await fetch(`${API_BASE_URL}/${productId}/reviews`);
-      const data = await res.json();
+      // Filter by category after rating is added
+      const filteredProducts = productsWithRatings.filter(
+        (product) =>
+          product.category_name?.toLowerCase() === category?.toLowerCase()
+      );
 
-      const avgRating =
-        data.length > 0
-          ? data.reduce((sum, review) => sum + review.rating, 0) / data.length
-          : 0;
+      setFiltered(filteredProducts);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
-      setAverageRating(avgRating);
-    };
+  fetchProducts();
+}, [category]);
 
-    fetchAverageRating();
-  }, [productId]);
+
 
   const handlePrev = () => {
     if (swiperRef.current && swiperRef.current.swiper) {
@@ -430,7 +451,9 @@ export default function Home({ category, productId }) {
                 <ProductCard
                   onClick={() =>
                     (window.location.href = `/product/${product.id}`)
-                  }>
+                  }
+                  // Remove this after
+                  onMouseEnter={() => console.log("Average Rating:", product.averageRating, product.id)}>
                   {product.discount && (
                     <DiscountBadge discount={product.discount}>
                       - {product.discount} %
@@ -475,7 +498,9 @@ export default function Home({ category, productId }) {
                   <CardContent sx={{ p: 2 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                       <Rating
-                        value={averageRating.toFixed(1)}
+                        // value={averageRating.toFixed(1)}
+                        value={product.averageRating || 0}
+                        precision={0.1}
                         readOnly
                         size="small"
                       />

@@ -38,6 +38,7 @@ import "swiper/css"
 import "swiper/css/pagination"
 // Import required modules
 import { Pagination, Navigation, Autoplay } from "swiper/modules"
+import { productRating } from '@/app/utils/productRating';
 
 // Styled components
 const ServiceCard = styled(Card)(({ theme }) => ({
@@ -325,6 +326,27 @@ export default function Home() {
     if (!originalPrice || !price) return null
     return Math.round(((originalPrice - price) / originalPrice) * 100)
   }
+
+    useEffect(() => {
+    const fetchAllProductsWithRatings = async () => {
+      try {
+        const products = await getAllProducts();
+  
+        const productsWithRatings = await Promise.all(
+          products.map(async (product) => {
+            const { averageRating } = await productRating(product.id);
+            return { ...product, averageRating };
+          })
+        );
+  
+        setProducts(productsWithRatings); // or setFiltered(), etc.
+      } catch (error) {
+        console.error("Error fetching products with ratings:", error);
+      }
+    };
+  
+    fetchAllProductsWithRatings();
+  }, []);
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -633,10 +655,13 @@ export default function Home() {
                   </ProductImageContainer>
                   <CardContent sx={{ p: 2 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                      <Rating value={product.rating} readOnly size="small" />
-                      <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                      {/* <Rating value={product.rating} readOnly size="small" /> */}
+                      {product.averageRating > 0 && (
+                        <Rating value={product.averageRating} readOnly size="small" precision={0.1} />
+                        )}
+                      {/* <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
                         ({product.reviews})
-                      </Typography>
+                      </Typography> */}
                     </Box>
                     <Typography variant="body2" sx={{ mb: 2, height: 40, overflow: "hidden" }}>
                       {product.name}

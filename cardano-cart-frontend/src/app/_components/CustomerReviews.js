@@ -363,6 +363,7 @@ export default function CustomerReviews({
           <Box display="flex" alignItems="center" gap={1} my={2}>
             <Rating
               name="read-only"
+              // value={averageRating}
               value={averageRating}
               precision={0.1}
               readOnly
