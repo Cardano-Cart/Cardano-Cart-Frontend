@@ -81,6 +81,7 @@ export  default function JoySignInSideTemplate() {
 
     try {
       const user = await auth.Credentials(credentials, endpoint);
+     
       const accessToken = user.access;
       localStorage.setItem('accessToken', accessToken);
       console.log('Access Token:', accessToken);

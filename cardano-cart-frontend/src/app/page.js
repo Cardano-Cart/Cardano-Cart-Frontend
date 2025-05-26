@@ -1,6 +1,5 @@
-"use client";
 
-import React, { useState, useEffect } from "react";
+'use client'
 import {
   Container,
   Typography,
@@ -17,6 +16,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
+import React, { useState} from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import Header from "./_components/Header";
 import Banner from "./_components/pages/home/banner";
@@ -29,7 +29,7 @@ import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { useCart } from "react-use-cart";
 import { current_products } from "./data";
 import Feature from "./_components/pages/home/Category";
-import Carousel from "./_components/Features";
+
 import ProductShowcase from "./_components/ProductShowcase";
 import { getAllProducts } from "../../utils/_products";
 // import { useRouter } from "next/compat/router";
@@ -152,25 +152,7 @@ const Home = () => {
   // fetch products from the backend
   const [products, setProducts] = useState(current_products);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (typeof window !== "undefined") {
-        const access_token = localStorage.getItem("accessToken");
-        //console.log(access_token); // should log access_token correctly
-        if (access_token) {
-          try {
-            const fetchedProducts = await getAllProducts(access_token);
-            setProducts(fetchedProducts);
-            //console.log(fetchedProducts)
-          } catch (error) {
-            console.error("Error fetching products:", error);
-          }
-        }
-      }
-    };
-
-    fetchProducts();
-  }, []);
+ 
 
   const handleAddToCart = (message) => {
     setAlertMessage(message);

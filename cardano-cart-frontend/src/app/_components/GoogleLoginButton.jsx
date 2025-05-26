@@ -1,10 +1,15 @@
-import React, { useEffect, useRef } from "react"
+'use client'
+
+import React, { useEffect, useRef, useContext } from "react"
+import { useRouter } from 'next/navigation'
+import { UserContext } from '../../../utils/UserContext'
 
 const GoogleLoginButton = ({ onSuccess, onError }) => {
   const buttonRef = useRef(null)
+  const router = useRouter()
+  const { setUser } = useContext(UserContext)
 
   useEffect(() => {
-    // Load the Google Identity Services script
     const script = document.createElement("script")
     script.src = "https://accounts.google.com/gsi/client"
     script.async = true
@@ -37,7 +42,7 @@ const GoogleLoginButton = ({ onSuccess, onError }) => {
     }
   }
 
-  const handleCredentialResponse = async response => {
+  const handleCredentialResponse = async (response) => {
     try {
       console.log("Google credential response:", response.credential)
 
@@ -55,7 +60,17 @@ const GoogleLoginButton = ({ onSuccess, onError }) => {
       console.log("Google login response:", data)
 
       if (apiResponse.ok) {
+        localStorage.setItem('accessToken', data.access_token)
+        setUser(data)
+        console.log("User data set in context:", data.user)
+                
+
+        if (data) {
+          localStorage.setItem('user', JSON.stringify(data))
+        }
+
         onSuccess?.(data)
+        router.push("/")
       } else {
         throw new Error("Google login failed")
       }

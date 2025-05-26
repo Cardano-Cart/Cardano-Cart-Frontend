@@ -36,15 +36,19 @@ import {
 } from "@mui/material"
 import { ExpandMore, FilterList, Close } from "@mui/icons-material"
 import dynamic from "next/dynamic"
-import Header from "../_components/Header"
-import { current_products } from "../data"
-import { getAllProducts } from "../../../utils/_products"
+import Header from "@/app/_components/Header"
+import { useParams } from "next/navigation"
+import { current_products } from "@/app/data"
+import { getAllProducts } from "../../../../utils/_products"
 
-const ShopAnimation = dynamic(() => import("../_components/ShopLoading"), {
+const ShopAnimation = dynamic(() => import("../../_components/ShopLoading"), {
   ssr: false
 })
 
 const ShopPage = () => {
+     const params = useParams()
+      const category_name = params.category_name
+      const categoryname = decodeURIComponent(category_name)
   const [searchTerm, setSearchTerm] = useState("")
   const [priceRange, setPriceRange] = useState([0, 2000])
   const [products, setProducts] = useState(current_products)
@@ -58,9 +62,9 @@ const ShopPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [alertMessage, setAlertMessage] = useState("")
   const [sortBy, setSortBy] = useState("alphabetical")
-  const [columnCount, setColumnCount] = useState(4) // Default to 4 columns
+  const [columnCount, setColumnCount] = useState(4) 
   const [drawerOpen, setDrawerOpen] = useState(false)
-
+ console.log("Category Name:", category_name)
   // Pagination
   const [page, setPage] = useState(1)
   const productsPerPage = 12
@@ -126,6 +130,11 @@ const ShopPage = () => {
       )
     }
 
+filtered = filtered.filter(
+        product =>
+          product.category_name === category_name
+      )        
+      console.log("Fetched Products:", filteredProducts)
     // Apply price range filter
     filtered = filtered.filter(
       product =>
@@ -149,12 +158,9 @@ const ShopPage = () => {
       })
     }
 
-    // Apply size filters
+
+
     
-
-    // Apply color filters
-   
-
     // Apply sorting
     switch (sortBy) {
       case "alphabetical":
@@ -182,7 +188,8 @@ const ShopPage = () => {
     sortBy,
     products,
     availabilityFilters,
-    categoryFilters
+    categoryFilters,
+   
     
   ])
 
@@ -232,14 +239,14 @@ const ShopPage = () => {
     })
   }
 
- 
-
-  const handleColorChange = filter => {
-    setColorFilters({
-      ...colorFilters,
-      [filter]: !colorFilters[filter]
+  const handleSizeChange = filter => {
+    setSizeFilters({
+      ...sizeFilters,
+      [filter]: !sizeFilters[filter]
     })
   }
+
+  
 
   const handlePageChange = (event, value) => {
     setPage(value)
@@ -260,7 +267,7 @@ const ShopPage = () => {
           gutterBottom
           sx={{ fontWeight: "bold", mb: 3 }}
         >
-          Products
+          {categoryname}
         </Typography>
 
         {/* Search Bar */}
@@ -432,7 +439,7 @@ const ShopPage = () => {
                           >
                             <Typography variant="body2">In stock</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              (14)
+                              ({filteredProducts.length})
                             </Typography>
                           </Box>
                         }
@@ -474,66 +481,7 @@ const ShopPage = () => {
               </Accordion>
               <Divider sx={{ mb: 2 }} />
               {/* Categories Filter */}
-              <Accordion defaultExpanded sx={{ boxShadow: "none" }}>
-                <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Typography variant="subtitle1" fontWeight="medium">
-                    Categories
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <List disablePadding>
-                    {categories.length > 0 ? (
-                      categories.map(category => {
-                        const categoryCount = products.filter(
-                          product => product.category_name === category
-                        ).length
-                        return (
-                          <ListItem disablePadding key={category}>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={categoryFilters[category] || false}
-                                  onChange={() =>
-                                    handleCategoryChange(category)
-                                  }
-                                  size="small"
-                                />
-                              }
-                              label={
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    width: "100%"
-                                  }}
-                                >
-                                  <Typography variant="body2">
-                                    {category}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
-                                    ({categoryCount})
-                                  </Typography>
-                                </Box>
-                              }
-                              sx={{ width: "100%" }}
-                            />
-                          </ListItem>
-                        )
-                      })
-                    ) : (
-                      <ListItem>
-                        <Typography variant="body2" color="text.secondary">
-                          No categories available
-                        </Typography>
-                      </ListItem>
-                    )}
-                  </List>
-                </AccordionDetails>
-              </Accordion>
-              <Divider sx={{ mb: 2 }} />
+              
               {/* Price Filter */}
               <Accordion defaultExpanded sx={{ boxShadow: "none" }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
@@ -651,7 +599,7 @@ const ShopPage = () => {
                                 variant="body2"
                                 color="text.secondary"
                               >
-                                (14)
+                                ({filteredProducts.length})
                               </Typography>
                             </Box>
                           }
@@ -684,7 +632,7 @@ const ShopPage = () => {
                                 variant="body2"
                                 color="text.secondary"
                               >
-                                (7)
+                                ({!filteredProducts.length || 0})
                               </Typography>
                             </Box>
                           }
@@ -694,70 +642,8 @@ const ShopPage = () => {
                     </List>
                   </AccordionDetails>
                 </Accordion>
-                <Divider sx={{ mb: 2 }} />
-                {/* Categories Filter (renamed from Brand) */}
-                <Accordion defaultExpanded sx={{ boxShadow: "none" }}>
-                  <AccordionSummary expandIcon={<ExpandMore />}>
-                    <Typography variant="subtitle1" fontWeight="medium">
-                      Categories
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <List disablePadding>
-                      {categories.length > 0 ? (
-                        categories.map(category => {
-                          // Count products in this category
-                          const categoryCount = products.filter(
-                            product => product.category_name === category
-                          ).length
-
-                          return (
-                            <ListItem disablePadding key={category}>
-                              <FormControlLabel
-                                control={
-                                  <Checkbox
-                                    checked={categoryFilters[category] || false}
-                                    onChange={() =>
-                                      handleCategoryChange(category)
-                                    }
-                                    size="small"
-                                  />
-                                }
-                                label={
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      justifyContent: "space-between",
-                                      width: "100%"
-                                    }}
-                                  >
-                                    <Typography variant="body2">
-                                      {category}
-                                    </Typography>
-                                    <Typography
-                                      variant="body2"
-                                      color="text.secondary"
-                                    >
-                                      ({categoryCount})
-                                    </Typography>
-                                  </Box>
-                                }
-                                sx={{ width: "100%" }}
-                              />
-                            </ListItem>
-                          )
-                        })
-                      ) : (
-                        <ListItem>
-                          <Typography variant="body2" color="text.secondary">
-                            No categories available
-                          </Typography>
-                        </ListItem>
-                      )}
-                    </List>
-                  </AccordionDetails>
-                </Accordion>
-                <Divider sx={{ mb: 2 }} />
+              
+               
 
                 <Divider sx={{ mb: 2 }} />
                 {/* Price Filter */}

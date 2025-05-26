@@ -78,7 +78,12 @@ const AboutPage = () => {
           state.height = width * 2
         }
       })
-      setTimeout(() => canvasRef.current.style.opacity = '1')
+      setTimeout(() => {
+  if (canvasRef.current) {
+    canvasRef.current.style.opacity = '1';
+  }
+}, 0); // or a slightly longer delay if needed
+
       return () => { 
         globe.destroy();
         window.removeEventListener('resize', onResize);

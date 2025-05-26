@@ -67,7 +67,7 @@ export default function HeroSlider() {
   }
 
   return (
-    <Box sx={{ borderRadius: 3, overflow: "hidden", height: "100%" }}>
+    <Box sx={{ borderRadius: 3, overflow: "hidden", height: "92%" }}>
       <Swiper
         modules={[Pagination, Autoplay]}
         spaceBetween={0}

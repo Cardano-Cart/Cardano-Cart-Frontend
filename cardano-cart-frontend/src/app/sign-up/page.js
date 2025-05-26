@@ -339,7 +339,7 @@ export default function JoySignInSideTemplate() {
           backgroundImage: "url(/images/image2.png)",
           [theme.getColorSchemeSelector("dark")]: {
             backgroundImage: "url(/images/image1.png)",
-          },
+           },
         })}
       />
     </CssVarsProvider>

@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Fade, Grow, Slide, Zoom, useMediaQuery, useTheme } from '@mui/material';
 

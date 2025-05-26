@@ -1,15 +1,16 @@
 "use client"
+
 import { useRef, useEffect, useState } from "react"
 import {
   Box,
   Container,
   Typography,
-  Grid,
   Card,
   CardContent,
-  Divider,
   Rating,
   styled,
+  Snackbar,
+  Alert,
   IconButton,
   useTheme,
   useMediaQuery,
@@ -17,10 +18,8 @@ import {
   Modal,
 } from "@mui/material"
 import Image from "next/image"
-import HeadphonesOutlinedIcon from "@mui/icons-material/HeadphonesOutlined"
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
+import { useCart } from "react-use-cart"
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined"
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined"
 import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOutlined"
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew"
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
@@ -28,6 +27,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility"
 import CloseIcon from "@mui/icons-material/Close"
 import AddIcon from "@mui/icons-material/Add"
 import RemoveIcon from "@mui/icons-material/Remove"
+import ArrowBackIos from "@mui/icons-material/ArrowBackIos"
+
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward"
 import { current_products } from "../../../data"
 import { getAllProducts } from "../../../../../utils/_products"
@@ -38,6 +39,7 @@ import "swiper/css"
 import "swiper/css/pagination"
 // Import required modules
 import { Pagination, Navigation, Autoplay } from "swiper/modules"
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined"
 
 // Styled components
 const ServiceCard = styled(Card)(({ theme }) => ({
@@ -76,6 +78,13 @@ const ProductCard = styled(Card)(({ theme }) => ({
   "&:hover": {
     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
   },
+  "&:hover .quick-view-overlay": {
+    opacity: 1,
+  },
+  "&:hover .hover-actions": {
+    opacity: 1,
+    transform: "translateX(0)",
+  },
 }))
 
 const ProductImageContainer = styled(Box)(({ theme }) => ({
@@ -100,6 +109,20 @@ const QuickViewOverlay = styled(Box)(({ theme }) => ({
   transition: "opacity 0.3s ease",
   zIndex: 2,
 }))
+
+const HoverActionsContainer = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  top: 8,
+  right: 8,
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1),
+  opacity: 0,
+  transform: "translateX(20px)",
+  transition: "all 0.3s ease",
+  zIndex: 3,
+}))
+
 
 const DiscountBadge = styled(Box)(({ theme, discount }) => ({
   position: "absolute",
@@ -253,6 +276,9 @@ const allProducts = [
 
 export default function Home() {
   const swiperRef = useRef(null)
+  const { addItem } = useCart()
+  const [alertMessage, setAlertMessage] = useState("")
+  const [alertOpen, setAlertOpen] = useState(false)
   const [products, setProducts] = useState(current_products)
   const [quickViewProduct, setQuickViewProduct] = useState(null)
   const [quickViewOpen, setQuickViewOpen] = useState(false)
@@ -262,29 +288,22 @@ export default function Home() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   useEffect(() => {
-  const fetchProducts = async () => {
+    const fetchProducts = async () => {
+      try {
+        const fetchedProducts = await getAllProducts()
 
-     
-        try {
-          const fetchedProducts = await getAllProducts()
+        // Sort by most recent
+        const sortedProducts = fetchedProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
-          // Sort by most recent
-          const sortedProducts = fetchedProducts.sort((a, b) =>
-            new Date(b.created_at) - new Date(a.created_at)
-          )
+        setProducts(sortedProducts)
+        console.log(sortedProducts)
+      } catch (error) {
+        console.error("Error fetching products:", error)
+      }
+    }
 
-          setProducts(sortedProducts)
-          console.log(sortedProducts)
-        } catch (error) {
-          console.error("Error fetching products:", error)
-        }
-      
-    
-  }
-
-  fetchProducts()
-}, [])
-
+    fetchProducts()
+  }, [])
 
   const handlePrev = () => {
     if (swiperRef.current && swiperRef.current.swiper) {
@@ -330,13 +349,28 @@ export default function Home() {
     return Math.round(((originalPrice - price) / originalPrice) * 100)
   }
 
+ const handleAddToCart = quickViewProduct => {
+    addItem({
+      id: quickViewProduct.id,
+      name: quickViewProduct.name,
+      price: quickViewProduct.price,
+      image: quickViewProduct.images[0].image_url,
+      quantity: quantity
+      // image: selectedImage,
+    })
+    setAlertMessage(`${quickViewProduct.name} added to cart successfully!`)
+    console.log(`${quickViewProduct.name} added to cart successfully!`)
+    setAlertOpen(true)
+  }
+  const handleCloseAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return
+    }
+    setAlertOpen(false)
+  }
+
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-   
-     
-
-      
-
       {/* Similar Product */}
       <Box sx={{ my: 6 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
@@ -404,10 +438,10 @@ export default function Home() {
                         style={{ objectFit: "contain", aspectRatio: "1 / 1" }}
                       />
                     </Box>
-                    {/* Quick View Overlay */}
-                    <QuickViewOverlay className="quick-view-overlay">
-                      <Button
-                        variant="contained"
+
+                    {/* Hover Actions - Top Left */}
+                    <HoverActionsContainer className="hover-actions">
+                      <IconButton
                         size="small"
                         sx={{
                           backgroundColor: "white",
@@ -415,14 +449,19 @@ export default function Home() {
                           "&:hover": {
                             backgroundColor: "#f5f5f5",
                           },
-                          boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                          width: 36,
+                          height: 36,
                         }}
                         onClick={(e) => handleQuickView(e, product)}
-                        startIcon={<VisibilityIcon />}
                       >
-                        Quick View
-                      </Button>
-                    </QuickViewOverlay>
+                        <VisibilityIcon fontSize="small" />
+                      </IconButton>
+                     
+                    </HoverActionsContainer>
+
+                    {/* Quick View Overlay */}
+                  
                   </ProductImageContainer>
                   <CardContent sx={{ p: 2 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -547,7 +586,7 @@ export default function Home() {
                 {/* Price */}
                 <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                   <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
-                  ₳ {quickViewProduct.price}
+                     ₳{(quantity * quickViewProduct.price).toFixed(2)}
                   </Typography>
 
                   {quickViewProduct.originalPrice && (
@@ -581,16 +620,8 @@ export default function Home() {
                 {/* Color Options */}
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
-                    Color: {selectedColor}
+                    Category: {quickViewProduct.category}
                   </Typography>
-                  <Box sx={{ display: "flex", gap: 2 }}>
-                    <ColorOption selected={selectedColor === "Black"} onClick={() => handleColorSelect("Black")}>
-                      <Typography variant="body2">Black</Typography>
-                    </ColorOption>
-                    <ColorOption selected={selectedColor === "Green"} onClick={() => handleColorSelect("Green")}>
-                      <Typography variant="body2">Green</Typography>
-                    </ColorOption>
-                  </Box>
                 </Box>
 
                 {/* Quantity Selector */}
@@ -632,6 +663,7 @@ export default function Home() {
                         bgcolor: "#333",
                       },
                     }}
+                    onClick={() => handleAddToCart({ ...quickViewProduct, quantity })}
                   >
                     Add To Cart
                   </Button>
@@ -668,7 +700,19 @@ export default function Home() {
           )}
         </Box>
       </Modal>
+      <Snackbar
+              open={alertOpen}
+              autoHideDuration={3000}
+              onClose={handleCloseAlert}
+            >
+              <Alert
+                onClose={handleCloseAlert}
+                severity="success"
+                sx={{ width: "100%" }}
+              >
+                {alertMessage}
+              </Alert>
+            </Snackbar>
     </Container>
   )
 }
-

@@ -62,14 +62,14 @@ const Header = () => {
     const fetchProducts = async () => {
       if (typeof window !== "undefined") {
         const access_token = localStorage.getItem("accessToken")
-        if (access_token) {
+       
           try {
-            const fetchedProducts = await getAllProducts(access_token)
+            const fetchedProducts = await getAllProducts()
             setProducts(fetchedProducts)
           } catch (error) {
             console.error("Error fetching products:", error)
           }
-        }
+        
       }
     }
 
@@ -358,15 +358,7 @@ const Header = () => {
           className="flex-row justify-between items-center "
           sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
         >
-          <motion.div className="flex items-center " initial="hidden" animate="visible" variants={fadeInFromLeft}>
-            <Link
-              href="/"
-              sx={{ fontWeight: "bold", textDecoration: "none", alignItems: "center", fontSize: "22px" }}
-              className="text-black font-bold mr-2"
-            >
-              Cardano Cart
-            </Link>
-          </motion.div>
+         
 
           <motion.div className="flex items-center " variants={fadeInFromLeft} initial="hidden" animate="visible">
             <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -379,8 +371,21 @@ const Header = () => {
                     </Button>
                   ))}
                 </motion.div>
+                
               )}
-
+              </Box>
+              </motion.div>
+               <motion.div className="flex items-center " initial="hidden" animate="visible" variants={fadeInFromLeft}>
+            <Link
+              href="/"
+              sx={{ fontWeight: "bold", textDecoration: "none", alignItems: "center", fontSize: "22px" }}
+              className="text-black font-bold mr-2"
+            >
+              Cardano Cart
+            </Link>
+          </motion.div>
+              <motion.div>
+                <Box>
               {/* Cart & Auth */}
               <motion.div className="flex items-center space-x-4" variants={fadeInFromLeft}>
                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>

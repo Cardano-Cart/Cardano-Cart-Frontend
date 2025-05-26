@@ -38,6 +38,7 @@ import "swiper/css"
 import "swiper/css/pagination"
 // Import required modules
 import { Pagination, Navigation, Autoplay } from "swiper/modules"
+import Link from "next/link"
 
 // Styled components
 const ServiceCard = styled(Card)(({ theme }) => ({
@@ -264,18 +265,18 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       if (typeof window !== "undefined") {
-        const access_token = localStorage.getItem("accessToken")
+        
         //console.log(access_token); // should log access_token correctly
-        if (access_token) {
+        
           try {
-            const fetchedProducts = await getAllProducts(access_token)
+            const fetchedProducts = await getAllProducts()
             setProducts(fetchedProducts)
             console.log(fetchedProducts)
             //console.log(fetchedProducts)
           } catch (error) {
             console.error("Error fetching products:", error)
           }
-        }
+        
       }
     }
 
@@ -473,8 +474,9 @@ export default function Home() {
           <Grid item xs={12} md={8}>
             <Grid container spacing={3}>
               <Grid item xs={6} sm={3}>
-                <CategoryCard>
-                  <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <CategoryCard sx={{ textDecoration: 'none' }}>
+                  <Link href="/category/Electronics" passHref legacyBehavior>
+                  <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", textDecoration: "none" }}>
                     <Image
                       src="/images/Electronics.png"
                       alt="Electronics"
@@ -482,15 +484,17 @@ export default function Home() {
                       height={85}
                       style={{ objectFit: "contain" }}
                     />
-                    <Typography variant="subtitle1" sx={{ mt: 2, textAlign: "center" }}>
+                    <Typography variant="subtitle1" sx={{ mt: 2, textAlign: "center", textDecoration: "none" }}>
                       Electronics
                     </Typography>
                   </Box>
+                  </Link>
                 </CategoryCard>
               </Grid>
 
               <Grid item xs={6} sm={3}>
                 <CategoryCard>
+                  <Link href="/category/Mobiles" passHref legacyBehavior>
                   <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <Image
                       src="/images/Mobiles.png"
@@ -503,11 +507,13 @@ export default function Home() {
                       Mobiles
                     </Typography>
                   </Box>
+                  </Link>
                 </CategoryCard>
               </Grid>
 
               <Grid item xs={6} sm={3}>
                 <CategoryCard>
+                  <Link href="/category/Fashion" passHref legacyBehavior>
                   <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <Image
                       src="/images/Fashion.png"
@@ -520,11 +526,13 @@ export default function Home() {
                       Fashion
                     </Typography>
                   </Box>
+                   </Link>
                 </CategoryCard>
               </Grid>
 
               <Grid item xs={6} sm={3}>
                 <CategoryCard>
+                  <Link href="/category/Health & Beauty" passHref legacyBehavior>
                   <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <Image
                       src="/images/Beauty.png"
@@ -537,6 +545,7 @@ export default function Home() {
                       Health & Beauty
                     </Typography>
                   </Box>
+                  </Link>
                 </CategoryCard>
               </Grid>
             </Grid>
