@@ -135,12 +135,19 @@ export default function ProductPage() {
     }
   }, [product]);
 
-  const extraImages = [
-    product?.images?.[0]?.image_url || "/placeholder.svg",
-    "/images/Arrival1.jpg",
-    "/images/Arrival6.jpg",
-    "/images/Arrival7.jpg",
+  const defaultImages = [
+    "/images/noImage.jpg",
+    // "/images/Arrival6.jpg",
+    // "/images/Arrival7.jpg",
   ];
+
+  const backendImages =
+    product?.images?.map((img) => img.image_url).filter(Boolean) || [];
+
+  const extraImages =
+    backendImages.length > 1
+      ? backendImages
+      : [backendImages[0] || "/placeholder.svg", ...defaultImages];
 
   const handleQuantityChange = (event) => {
     const value = Math.max(1, Number.parseInt(event.target.value) || 1);
