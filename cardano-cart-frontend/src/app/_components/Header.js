@@ -326,27 +326,12 @@ const Header = () => {
 
                   <Divider />
 
-                  <Box
-                    sx={{
-                      p: 2,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      cursor: "pointer",
-                      "&:hover": { backgroundColor: "#f5f5f5" },
-                    }}
-                    onClick={handleSearchSubmit}
-                  >
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      Search for "{searchQuery}"
-                    </Typography>
-                    <ArrowForwardIcon fontSize="small" />
-                  </Box>
+               
                 </Paper>
               )}
             </Box>
 
-            <IconButton sx={{ ml: 2 }} onClick={handleSearchReset} aria-label="close search">
+            <IconButton sx={{ ml: 4 }} onClick={handleSearchReset} aria-label="close search">
               <CloseIcon />
             </IconButton>
           </motion.div>

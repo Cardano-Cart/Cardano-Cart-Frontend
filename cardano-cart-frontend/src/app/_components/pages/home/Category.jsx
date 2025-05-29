@@ -513,7 +513,7 @@ export default function Home() {
 
               <Grid item xs={6} sm={3}>
                 <CategoryCard>
-                  <Link href="/category/Fashion" passHref legacyBehavior>
+                  <Link href="/subcategory/Mobile Phones" passHref legacyBehavior>
                   <Box sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <Image
                       src="/images/Fashion.png"

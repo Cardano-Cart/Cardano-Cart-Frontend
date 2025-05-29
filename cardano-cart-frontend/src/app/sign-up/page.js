@@ -18,10 +18,11 @@ import Stack from "@mui/joy/Stack"
 import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded"
 import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded"
 import dynamic from "next/dynamic"
+import GoogleLoginButton from '../_components/GoogleLoginButton';
 
 const SignUpAnimation = dynamic(() => import("../_components/SignUpAnimation"))
 
-const BASE_URL = "https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1"
+
 //const BASE_URL = 'http://127.0.0.1:8000/api/v1';
 
 function ColorSchemeToggle(props) {
@@ -93,7 +94,7 @@ export default function JoySignInSideTemplate() {
     formData.append("last_name", lastName)
 
     try {
-      const response = await fetch(`${BASE_URL}/users/register/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/users/register/`, {
         method: "POST",
         body: formData,
         headers: {
@@ -314,6 +315,7 @@ export default function JoySignInSideTemplate() {
                 </Stack>
               </form>
             </Stack>
+            <GoogleLoginButton />
           </Box>
           <Box component="footer" sx={{ py: 3 }}>
             <Typography level="body-xs" sx={{ textAlign: "center" }}>

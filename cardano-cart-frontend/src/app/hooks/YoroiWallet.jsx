@@ -4,15 +4,14 @@ import { WalletContext } from '../_components/WalletContext';
 
 
 function ConnectWallet() {
-  const { isConnected, walletName, balance, connectWallet, disconnectWallet } =
+  const { isConnected, walletName, balance, connectWallet, disconnectWallet, walletAvailable } =
     useContext(WalletContext);
-
-  return (
-    <header style={headerStyle}>
+        
+          if(isConnected) return (
+            <header style={headerStyle}>
       <div style={walletInfoStyle}>
-        {isConnected ? (
-          <>
-           
+         
+           <>
             <p>
               Balance: <strong>{balance ? `${balance} ADA` : 'Loading...'}</strong>
             </p>
@@ -20,13 +19,39 @@ function ConnectWallet() {
               Disconnect
             </button>
           </>
-        ) : (
-          <button onClick={connectWallet} style={buttonStyle}>
-            Connect Wallet
-          </button>
-        )}
+       
       </div>
     </header>
+          )
+             if(!walletAvailable) return (
+            <header style={headerStyle}>
+      <div style={walletInfoStyle}>
+         
+           <>
+           
+            <button onClick={connectWallet} style={buttonStyle}>
+              Install Yoroi Wallet
+            </button>
+          </>
+       
+      </div>
+    </header>
+          )
+  return (
+    <header style={headerStyle}>
+      <div style={walletInfoStyle}>
+         
+           <>
+           
+            <button onClick={connectWallet} style={buttonStyle}>
+              Connect Wallet
+            </button>
+          </>
+       
+      </div>
+    </header>
+    
+
   );
 }
 

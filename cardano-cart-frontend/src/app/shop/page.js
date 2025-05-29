@@ -149,12 +149,7 @@ const ShopPage = () => {
       })
     }
 
-    // Apply size filters
     
-
-    // Apply color filters
-   
-
     // Apply sorting
     switch (sortBy) {
       case "alphabetical":
@@ -651,7 +646,7 @@ const ShopPage = () => {
                                 variant="body2"
                                 color="text.secondary"
                               >
-                                (14)
+                                ({filteredProducts.length})
                               </Typography>
                             </Box>
                           }
@@ -684,7 +679,7 @@ const ShopPage = () => {
                                 variant="body2"
                                 color="text.secondary"
                               >
-                                (7)
+                                ({!filteredProducts.length})
                               </Typography>
                             </Box>
                           }
@@ -694,7 +689,7 @@ const ShopPage = () => {
                     </List>
                   </AccordionDetails>
                 </Accordion>
-                <Divider sx={{ mb: 2 }} />
+                <Divider sx={{ mb: 1 }} />
                 {/* Categories Filter (renamed from Brand) */}
                 <Accordion defaultExpanded sx={{ boxShadow: "none" }}>
                   <AccordionSummary expandIcon={<ExpandMore />}>
@@ -757,9 +752,9 @@ const ShopPage = () => {
                     </List>
                   </AccordionDetails>
                 </Accordion>
-                <Divider sx={{ mb: 2 }} />
+                
 
-                <Divider sx={{ mb: 2 }} />
+                <Divider sx={{ mb: 1 }} />
                 {/* Price Filter */}
                 <Accordion defaultExpanded sx={{ boxShadow: "none" }}>
                   <AccordionSummary expandIcon={<ExpandMore />}>
@@ -888,17 +883,7 @@ const ShopPage = () => {
                       </Box>
                     ))}
                   </Box>
-                  <Button
-                    color="primary"
-                    sx={{
-                      mt: 2,
-                      textTransform: "none",
-                      justifyContent: "flex-start",
-                      p: 0
-                    }}
-                  >
-                    View all new arrivals
-                  </Button>
+                  
                 </Box>
               </Box>
             </Grid>

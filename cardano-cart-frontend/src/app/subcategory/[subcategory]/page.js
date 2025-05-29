@@ -32,7 +32,7 @@ import {
   Pagination,
   PaginationItem,
   Drawer,
-  IconButton
+  IconButton,
 } from "@mui/material"
 import { ExpandMore, FilterList, Close } from "@mui/icons-material"
 import dynamic from "next/dynamic"
@@ -42,13 +42,13 @@ import { current_products } from "@/app/data"
 import { getAllProducts } from "../../../../utils/_products"
 
 const ShopAnimation = dynamic(() => import("../../_components/ShopLoading"), {
-  ssr: false
+  ssr: false,
 })
 
 const ShopPage = () => {
-     const params = useParams()
-      const category_name = params.category_name
-      const categoryname = decodeURIComponent(category_name)
+  const params = useParams()
+  const subcategory = params.subcategory
+  const subcategoryname = decodeURIComponent(subcategory)
   const [searchTerm, setSearchTerm] = useState("")
   const [priceRange, setPriceRange] = useState([0, 2000])
   const [products, setProducts] = useState(current_products)
@@ -62,9 +62,9 @@ const ShopPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [alertMessage, setAlertMessage] = useState("")
   const [sortBy, setSortBy] = useState("alphabetical")
-  const [columnCount, setColumnCount] = useState(4) 
+  const [columnCount, setColumnCount] = useState(4)
   const [drawerOpen, setDrawerOpen] = useState(false)
- console.log("Category Name:", category_name)
+  console.log("SubCategory Name:", subcategory)
   // Pagination
   const [page, setPage] = useState(1)
   const productsPerPage = 12
@@ -73,15 +73,12 @@ const ShopPage = () => {
   // Filter states
   const [availabilityFilters, setAvailabilityFilters] = useState({
     inStock: true,
-    outOfStock: false
+    outOfStock: false,
   })
 
   const [categories, setCategories] = useState([])
   const [categoryFilters, setCategoryFilters] = useState({})
-
-  
-
- 
+  const [sizeFilters, setSizeFilters] = useState({})
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -99,25 +96,6 @@ const ShopPage = () => {
   }, [])
 
   useEffect(() => {
-    if (products && products.length > 0) {
-      // Extract unique categories from products
-      const uniqueCategories = [
-        ...new Set(
-          products.map(product => product.category_name).filter(Boolean)
-        )
-      ]
-      setCategories(uniqueCategories)
-
-      // Initialize category filters object with all categories set to false
-      const initialCategoryFilters = {}
-      uniqueCategories.forEach(category => {
-        initialCategoryFilters[category] = false
-      })
-      setCategoryFilters(initialCategoryFilters)
-    }
-  }, [products])
-
-  useEffect(() => {
     setTimeout(() => setIsLoading(false), 2000)
     setMounted(true)
 
@@ -125,42 +103,34 @@ const ShopPage = () => {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      filtered = filtered.filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
     }
 
-filtered = filtered.filter(
-        product =>
-          product.category_name === category_name
-      )        
-      console.log("Fetched Products:", filteredProducts)
+    filtered = filtered.filter((product) => product.subcategory && product.subcategory.name === subcategoryname)
+    console.log("After subcategory filter:", filtered.length, "products")
+    console.log("Looking for subcategory:", subcategoryname)
+    console.log("Available subcategories:", [...new Set(products.map((p) => p.subcategory?.name))])
     // Apply price range filter
-    filtered = filtered.filter(
-      product =>
-        product.price >= priceRange[0] && product.price <= priceRange[1]
-    )
+    filtered = filtered.filter((product) => {
+      const price = Number.parseFloat(product.price)
+      return price >= priceRange[0] && price <= priceRange[1]
+    })
 
     // Apply availability filters
     if (availabilityFilters.inStock && !availabilityFilters.outOfStock) {
-      filtered = filtered.filter(product => product.stock_quantity > 0)
+      filtered = filtered.filter((product) => product.stock > 0)
     } else if (!availabilityFilters.inStock && availabilityFilters.outOfStock) {
-      filtered = filtered.filter(product => product.stock_quantity <= 0)
+      filtered = filtered.filter((product) => product.stock <= 0)
     }
 
     // Apply category filters
-    const selectedCategories = Object.keys(categoryFilters).filter(
-      key => categoryFilters[key]
-    )
+    const selectedCategories = Object.keys(categoryFilters).filter((key) => categoryFilters[key])
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter(product => {
-        return selectedCategories.includes(product.category_name)
+      filtered = filtered.filter((product) => {
+        return selectedCategories.includes(product.subcategory.name)
       })
     }
 
-
-
-    
     // Apply sorting
     switch (sortBy) {
       case "alphabetical":
@@ -182,16 +152,7 @@ filtered = filtered.filter(
     setFilteredProducts(filtered)
     setTotalPages(Math.ceil(filtered.length / productsPerPage))
     setPage(1) // Reset to first page when filters change
-  }, [
-    searchTerm,
-    priceRange,
-    sortBy,
-    products,
-    availabilityFilters,
-    categoryFilters,
-   
-    
-  ])
+  }, [searchTerm, priceRange, sortBy, products, availabilityFilters, categoryFilters, subcategoryname])
 
   // Update displayed products when page or filtered products change
   useEffect(() => {
@@ -212,7 +173,7 @@ filtered = filtered.filter(
     setPriceRange(newValue)
   }
 
-  const handleAddToCart = product => {
+  const handleAddToCart = (product) => {
     // In a real app, this would add to cart state or context
     setAlertMessage(`${product.name} added to cart successfully!`)
     setAlertOpen(true)
@@ -225,28 +186,26 @@ filtered = filtered.filter(
     setAlertOpen(false)
   }
 
-  const handleAvailabilityChange = filter => {
+  const handleAvailabilityChange = (filter) => {
     setAvailabilityFilters({
       ...availabilityFilters,
-      [filter]: !availabilityFilters[filter]
+      [filter]: !availabilityFilters[filter],
     })
   }
 
-  const handleCategoryChange = filter => {
+  const handleCategoryChange = (filter) => {
     setCategoryFilters({
       ...categoryFilters,
-      [filter]: !categoryFilters[filter]
+      [filter]: !categoryFilters[filter],
     })
   }
 
-  const handleSizeChange = filter => {
+  const handleSizeChange = (filter) => {
     setSizeFilters({
       ...sizeFilters,
-      [filter]: !sizeFilters[filter]
+      [filter]: !sizeFilters[filter],
     })
   }
-
-  
 
   const handlePageChange = (event, value) => {
     setPage(value)
@@ -254,7 +213,7 @@ filtered = filtered.filter(
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  const handleSearch = e => {
+  const handleSearch = (e) => {
     setSearchTerm(e.target.value)
   }
 
@@ -262,12 +221,8 @@ filtered = filtered.filter(
     <>
       <Header />
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4, minHeight: "auto" }}>
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ fontWeight: "bold", mb: 3 }}
-        >
-          {categoryname}
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
+          {subcategoryname}
         </Typography>
 
         {/* Search Bar */}
@@ -294,7 +249,7 @@ filtered = filtered.filter(
             gap: isMobile ? 2 : 0,
             justifyContent: "space-between",
             alignItems: isMobile ? "flex-start" : "center",
-            boxShadow: "none"
+            boxShadow: "none",
           }}
         >
           <Box sx={{ display: isMobile ? "none" : "flex", gap: 1 }}>
@@ -326,42 +281,29 @@ filtered = filtered.filter(
               alignItems: isMobile ? "flex-start" : "center",
               gap: 2,
               flexDirection: isMobile ? "column" : "row",
-              width: isMobile ? "100%" : "auto"
+              width: isMobile ? "100%" : "auto",
             }}
           >
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
-                width: isMobile ? "100%" : "auto"
+                width: isMobile ? "100%" : "auto",
               }}
             >
               <Typography variant="body2" sx={{ mr: 1 }}>
                 Sort by:
               </Typography>
-              <FormControl
-                size="small"
-                sx={{ minWidth: 180, width: isMobile ? "100%" : "auto" }}
-              >
-                <Select
-                  value={sortBy}
-                  onChange={e => setSortBy(e.target.value)}
-                  displayEmpty
-                >
+              <FormControl size="small" sx={{ minWidth: 180, width: isMobile ? "100%" : "auto" }}>
+                <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)} displayEmpty>
                   <MenuItem value="alphabetical">Alphabetically, A-Z</MenuItem>
-                  <MenuItem value="alphabetical-reverse">
-                    Alphabetically, Z-A
-                  </MenuItem>
+                  <MenuItem value="alphabetical-reverse">Alphabetically, Z-A</MenuItem>
                   <MenuItem value="price-low">Price, low to high</MenuItem>
                   <MenuItem value="price-high">Price, high to low</MenuItem>
                 </Select>
               </FormControl>
             </Box>
-            {!isMobile && (
-              <Typography variant="body2">
-                {filteredProducts.length} products
-              </Typography>
-            )}
+            {!isMobile && <Typography variant="body2">{filteredProducts.length} products</Typography>}
           </Box>
         </Paper>
         <Divider sx={{ mb: 2 }} />
@@ -391,8 +333,8 @@ filtered = filtered.filter(
                 width: "85%",
                 maxWidth: "300px",
                 p: 2,
-                boxSizing: "border-box"
-              }
+                boxSizing: "border-box",
+              },
             }}
           >
             <Box
@@ -400,7 +342,7 @@ filtered = filtered.filter(
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                mb: 2
+                mb: 2,
               }}
             >
               <Typography variant="h6">Filters</Typography>
@@ -434,7 +376,7 @@ filtered = filtered.filter(
                             sx={{
                               display: "flex",
                               justifyContent: "space-between",
-                              width: "100%"
+                              width: "100%",
                             }}
                           >
                             <Typography variant="body2">In stock</Typography>
@@ -451,9 +393,7 @@ filtered = filtered.filter(
                         control={
                           <Checkbox
                             checked={availabilityFilters.outOfStock}
-                            onChange={() =>
-                              handleAvailabilityChange("outOfStock")
-                            }
+                            onChange={() => handleAvailabilityChange("outOfStock")}
                             size="small"
                           />
                         }
@@ -462,12 +402,10 @@ filtered = filtered.filter(
                             sx={{
                               display: "flex",
                               justifyContent: "space-between",
-                              width: "100%"
+                              width: "100%",
                             }}
                           >
-                            <Typography variant="body2">
-                              Out of stock
-                            </Typography>
+                            <Typography variant="body2">Out of stock</Typography>
                             <Typography variant="body2" color="text.secondary">
                               (7)
                             </Typography>
@@ -481,7 +419,7 @@ filtered = filtered.filter(
               </Accordion>
               <Divider sx={{ mb: 2 }} />
               {/* Categories Filter */}
-              
+
               {/* Price Filter */}
               <Accordion defaultExpanded sx={{ boxShadow: "none" }}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
@@ -503,7 +441,7 @@ filtered = filtered.filter(
                       sx={{
                         display: "flex",
                         justifyContent: "space-between",
-                        mt: 2
+                        mt: 2,
                       }}
                     >
                       <TextField
@@ -511,20 +449,14 @@ filtered = filtered.filter(
                         type="number"
                         size="small"
                         value={priceRange[0]}
-                        onChange={e => {
+                        onChange={(e) => {
                           const value = Number.parseInt(e.target.value)
-                          if (
-                            !isNaN(value) &&
-                            value >= 0 &&
-                            value < priceRange[1]
-                          ) {
+                          if (!isNaN(value) && value >= 0 && value < priceRange[1]) {
                             setPriceRange([value, priceRange[1]])
                           }
                         }}
                         InputProps={{
-                          startAdornment: (
-                            <Typography variant="body2">₳</Typography>
-                          )
+                          startAdornment: <Typography variant="body2">₳</Typography>,
                         }}
                         sx={{ width: "45%" }}
                       />
@@ -533,16 +465,14 @@ filtered = filtered.filter(
                         type="number"
                         size="small"
                         value={priceRange[1]}
-                        onChange={e => {
+                        onChange={(e) => {
                           const value = Number.parseInt(e.target.value)
                           if (!isNaN(value) && value > priceRange[0]) {
                             setPriceRange([priceRange[0], value])
                           }
                         }}
                         InputProps={{
-                          startAdornment: (
-                            <Typography variant="body2">₳</Typography>
-                          )
+                          startAdornment: <Typography variant="body2">₳</Typography>,
                         }}
                         sx={{ width: "45%" }}
                       />
@@ -551,12 +481,7 @@ filtered = filtered.filter(
                 </AccordionDetails>
               </Accordion>
               <Divider sx={{ mb: 2 }} />
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={() => setDrawerOpen(false)}
-                sx={{ mt: 2 }}
-              >
+              <Button variant="contained" fullWidth onClick={() => setDrawerOpen(false)} sx={{ mt: 2 }}>
                 Apply Filters
               </Button>
             </Box>
@@ -580,9 +505,7 @@ filtered = filtered.filter(
                           control={
                             <Checkbox
                               checked={availabilityFilters.inStock}
-                              onChange={() =>
-                                handleAvailabilityChange("inStock")
-                              }
+                              onChange={() => handleAvailabilityChange("inStock")}
                               size="small"
                             />
                           }
@@ -591,14 +514,11 @@ filtered = filtered.filter(
                               sx={{
                                 display: "flex",
                                 justifyContent: "space-between",
-                                width: "100%"
+                                width: "100%",
                               }}
                             >
                               <Typography variant="body2">In stock</Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
+                              <Typography variant="body2" color="text.secondary">
                                 ({filteredProducts.length})
                               </Typography>
                             </Box>
@@ -611,9 +531,7 @@ filtered = filtered.filter(
                           control={
                             <Checkbox
                               checked={availabilityFilters.outOfStock}
-                              onChange={() =>
-                                handleAvailabilityChange("outOfStock")
-                              }
+                              onChange={() => handleAvailabilityChange("outOfStock")}
                               size="small"
                             />
                           }
@@ -622,16 +540,11 @@ filtered = filtered.filter(
                               sx={{
                                 display: "flex",
                                 justifyContent: "space-between",
-                                width: "100%"
+                                width: "100%",
                               }}
                             >
-                              <Typography variant="body2">
-                                Out of stock
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
+                              <Typography variant="body2">Out of stock</Typography>
+                              <Typography variant="body2" color="text.secondary">
                                 ({!filteredProducts.length || 0})
                               </Typography>
                             </Box>
@@ -642,8 +555,6 @@ filtered = filtered.filter(
                     </List>
                   </AccordionDetails>
                 </Accordion>
-              
-               
 
                 <Divider sx={{ mb: 2 }} />
                 {/* Price Filter */}
@@ -667,7 +578,7 @@ filtered = filtered.filter(
                         sx={{
                           display: "flex",
                           justifyContent: "space-between",
-                          mt: 2
+                          mt: 2,
                         }}
                       >
                         <TextField
@@ -675,20 +586,14 @@ filtered = filtered.filter(
                           type="number"
                           size="small"
                           value={priceRange[0]}
-                          onChange={e => {
+                          onChange={(e) => {
                             const value = Number.parseInt(e.target.value)
-                            if (
-                              !isNaN(value) &&
-                              value >= 0 &&
-                              value < priceRange[1]
-                            ) {
+                            if (!isNaN(value) && value >= 0 && value < priceRange[1]) {
                               setPriceRange([value, priceRange[1]])
                             }
                           }}
                           InputProps={{
-                            startAdornment: (
-                              <Typography variant="body2">₳</Typography>
-                            )
+                            startAdornment: <Typography variant="body2">₳</Typography>,
                           }}
                           sx={{ width: "45%" }}
                         />
@@ -697,16 +602,14 @@ filtered = filtered.filter(
                           type="number"
                           size="small"
                           value={priceRange[1]}
-                          onChange={e => {
+                          onChange={(e) => {
                             const value = Number.parseInt(e.target.value)
                             if (!isNaN(value) && value > priceRange[0]) {
                               setPriceRange([priceRange[0], value])
                             }
                           }}
                           InputProps={{
-                            startAdornment: (
-                              <Typography variant="body2">₳</Typography>
-                            )
+                            startAdornment: <Typography variant="body2">₳</Typography>,
                           }}
                           sx={{ width: "45%" }}
                         />
@@ -717,18 +620,12 @@ filtered = filtered.filter(
                 <Divider sx={{ mb: 2 }} />
                 {/* Latest Products */}
                 <Box sx={{ mt: 2 }}>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight="medium"
-                    sx={{ mb: 2 }}
-                  >
+                  <Typography variant="subtitle1" fontWeight="medium" sx={{ mb: 2 }}>
                     Latest Products
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
-                  <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                  >
-                    {products.slice(0, 4).map(product => (
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    {products.slice(0, 4).map((product) => (
                       <Box key={product.id} sx={{ display: "flex", gap: 2 }}>
                         <CardMedia
                           component="img"
@@ -737,7 +634,7 @@ filtered = filtered.filter(
                             height: 64,
                             objectFit: "contain",
                             bgcolor: "grey.100",
-                            borderRadius: 1
+                            borderRadius: 1,
                           }}
                           image={product.images[0]?.image_url}
                           alt={product.name}
@@ -753,28 +650,21 @@ filtered = filtered.filter(
                               textOverflow: "ellipsis",
                               display: "-webkit-box",
                               WebkitLineClamp: 1,
-                              WebkitBoxOrient: "vertical"
+                              WebkitBoxOrient: "vertical",
                             }}
                           >
-                            {product.name.length > 20
-                              ? `${product.name.substring(0, 20)}...`
-                              : product.name}
+                            {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {product.category || "Electronics"}
                           </Typography>
-                          <Typography
-                            variant="body2"
-                            fontWeight="medium"
-                            sx={{ mt: 0.5 }}
-                          >
+                          <Typography variant="body2" fontWeight="medium" sx={{ mt: 0.5 }}>
                             ₳{product.price}
                           </Typography>
                         </Box>
                       </Box>
                     ))}
                   </Box>
-                  
                 </Box>
               </Box>
             </Grid>
@@ -783,19 +673,11 @@ filtered = filtered.filter(
           {/* Product Grid - adjust width based on whether sidebar is visible */}
           <Grid item xs={12} md={!isMobile ? 9 : 12}>
             <Grid container spacing={2}>
-              {displayedProducts.map(product => (
+              {displayedProducts.map((product) => (
                 <Grid
                   item
                   xs={6}
-                  sm={
-                    isMobile
-                      ? 6
-                      : columnCount === 2
-                      ? 6
-                      : columnCount === 3
-                      ? 4
-                      : 3
-                  }
+                  sm={isMobile ? 6 : columnCount === 2 ? 6 : columnCount === 3 ? 4 : 3}
                   md={columnCount === 2 ? 6 : columnCount === 3 ? 4 : 3}
                   key={product.id}
                 >
@@ -804,7 +686,7 @@ filtered = filtered.filter(
                       height: "100%",
                       display: "flex",
                       flexDirection: "column",
-                      borderRadius: 1
+                      borderRadius: 1,
                     }}
                   >
                     <Box sx={{ position: "relative" }}>
@@ -819,7 +701,7 @@ filtered = filtered.filter(
                             bgcolor: "grey.700",
                             color: "white",
                             fontSize: "0.7rem",
-                            height: 24
+                            height: 24,
                           }}
                         />
                       )}
@@ -834,9 +716,9 @@ filtered = filtered.filter(
                           height: {
                             xs: "140px",
                             sm: "160px",
-                            md: "180px"
+                            md: "180px",
                           },
-                          p: 2
+                          p: 2,
                         }}
                       />
                       {product.countdown && (
@@ -850,48 +732,30 @@ filtered = filtered.filter(
                             color: "white",
                             display: "flex",
                             justifyContent: "space-around",
-                            p: 0.5
+                            p: 0.5,
                           }}
                         >
                           <Box sx={{ textAlign: "center" }}>
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.75rem" }}
-                            >
+                            <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
                               274
                             </Typography>
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.6rem", display: "block" }}
-                            >
+                            <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
                               Days
                             </Typography>
                           </Box>
                           <Box sx={{ textAlign: "center" }}>
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.75rem" }}
-                            >
+                            <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
                               7
                             </Typography>
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.6rem", display: "block" }}
-                            >
+                            <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
                               Hrs
                             </Typography>
                           </Box>
                           <Box sx={{ textAlign: "center" }}>
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.75rem" }}
-                            >
+                            <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
                               58
                             </Typography>
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.6rem", display: "block" }}
-                            >
+                            <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
                               Min
                             </Typography>
                           </Box>
@@ -903,32 +767,19 @@ filtered = filtered.filter(
                         flexGrow: 1,
                         display: "flex",
                         flexDirection: "column",
-                        p: 2
+                        p: 2,
                       }}
                     >
                       <Typography variant="caption" color="text.secondary">
-                        {product.category_name || "Electronics"}
+                        {product.subcategory.name || "Electronics"}
                       </Typography>
-                      <Typography
-                        variant={isMobile ? "body2" : "subtitle2"}
-                        component="div"
-                        noWrap
-                        sx={{ mb: 0.5 }}
-                      >
+                      <Typography variant={isMobile ? "body2" : "subtitle2"} component="div" noWrap sx={{ mb: 0.5 }}>
                         {product.name}
                       </Typography>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <Typography variant={isMobile ? "caption" : "body2"}>
-                          ₳{product.price}
-                        </Typography>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Typography variant={isMobile ? "caption" : "body2"}>₳{product.price}</Typography>
                         {product.originalPrice && (
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            sx={{ textDecoration: "line-through" }}
-                          >
+                          <Typography variant="caption" color="text.secondary" sx={{ textDecoration: "line-through" }}>
                             ₳{product.originalPrice}
                           </Typography>
                         )}
@@ -949,15 +800,13 @@ filtered = filtered.filter(
             </Grid>
 
             {/* Pagination - Updated to use MUI Pagination component */}
-            <Box
-              sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}
-            >
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}>
               <Pagination
                 count={totalPages}
                 page={page}
                 onChange={handlePageChange}
                 color="primary"
-                renderItem={item => (
+                renderItem={(item) => (
                   <PaginationItem
                     component={Button}
                     {...item}
@@ -970,10 +819,10 @@ filtered = filtered.filter(
                             bgcolor: "primary.main",
                             color: "white",
                             "&:hover": {
-                              bgcolor: "primary.dark"
-                            }
+                              bgcolor: "primary.dark",
+                            },
                           }
-                        : {})
+                        : {}),
                     }}
                   />
                 )}
@@ -982,16 +831,8 @@ filtered = filtered.filter(
           </Grid>
         </Grid>
       </Container>
-      <Snackbar
-        open={alertOpen}
-        autoHideDuration={3000}
-        onClose={handleCloseAlert}
-      >
-        <Alert
-          onClose={handleCloseAlert}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
+      <Snackbar open={alertOpen} autoHideDuration={3000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: "100%" }}>
           {alertMessage}
         </Alert>
       </Snackbar>

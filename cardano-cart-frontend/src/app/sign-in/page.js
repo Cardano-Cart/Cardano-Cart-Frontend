@@ -32,7 +32,7 @@ import GoogleLoginButton from '../_components/GoogleLoginButton';
 
 import { Auth } from '../../../utils/_auth';
 
-const BASE_URL = 'https://charming-ninnetta-knust-028ea081.koyeb.app/api/v1';
+
 //const BASE_URL = 'http://127.0.0.1:8000/api/v1';
 
 const auth = new Auth();
@@ -77,7 +77,7 @@ export  default function JoySignInSideTemplate() {
     setLoading(true);
 
     const credentials = { email, password };
-    const endpoint = `${BASE_URL}/users/login/`;
+    const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/users/login/`;
 
     try {
       const user = await auth.Credentials(credentials, endpoint);
