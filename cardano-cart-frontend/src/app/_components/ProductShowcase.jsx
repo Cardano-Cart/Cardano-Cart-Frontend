@@ -102,6 +102,7 @@ const ProductShowcase = () => {
               position: 'absolute',
               top: '40%'
             }}
+            onClick={() => window.location.href = '/shop'}
           >
             Buy Now
           </Button>
@@ -166,6 +167,7 @@ const ProductShowcase = () => {
                 color: 'white',
                 '&:hover': { borderColor: '#e0e0e0', bgcolor: 'rgba(255,255,255,0.1)' } 
               }}
+              onClick={() => window.location.href = '/shop'}
             >
               Buy Now
             </Button>
@@ -236,6 +238,7 @@ const ProductShowcase = () => {
               left: '50%',
               transform: 'translateX(-50%)'
             }}
+            onClick={() => window.location.href = '/shop'}
           >
             Buy Now
           </Button>
@@ -274,7 +277,7 @@ const ProductShowcase = () => {
         }}>
           <Slide direction="right" in={loaded} timeout={800}>
             <Typography variant="subtitle1">
-              START FROM $899
+              START FROM ₳899
             </Typography>
           </Slide>
           <Slide 
@@ -301,6 +304,7 @@ const ProductShowcase = () => {
                 color: 'white',
                 '&:hover': { borderColor: '#e0e0e0', bgcolor: 'rgba(255,255,255,0.1)' } 
               }}
+              onClick={() => window.location.href = '/shop'}
             >
               Buy Now
             </Button>

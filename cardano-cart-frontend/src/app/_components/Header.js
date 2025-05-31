@@ -347,6 +347,20 @@ const Header = () => {
 
           <motion.div className="flex items-center " variants={fadeInFromLeft} initial="hidden" animate="visible">
             <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+              {/* Mobile Menu */}
+              <motion.div className="md:hidden" variants={fadeInFromLeft}>
+                {isMobile && (
+                  <IconButton
+                    edge="start"
+                    color="inherit"
+                    aria-label="menu"
+                    onClick={handleMobileMenuToggle}
+                    sx={{ ml: 2 }}
+                  >
+                    <MenuIcon className="text-black" />
+                  </IconButton>
+                )}
+              </motion.div>
               {/* Menu Links */}
               {!isMobile && (
                 <motion.div className="flex space-x-4" variants={fadeInFromLeft}>
@@ -360,7 +374,9 @@ const Header = () => {
               )}
               </Box>
               </motion.div>
+              {!isMobile && (
                <motion.div className="flex items-center " initial="hidden" animate="visible" variants={fadeInFromLeft}>
+                
             <Link
               href="/"
               sx={{ fontWeight: "bold", textDecoration: "none", alignItems: "center", fontSize: "22px" }}
@@ -368,7 +384,7 @@ const Header = () => {
             >
               Cardano Cart
             </Link>
-          </motion.div>
+          </motion.div>)}
               <motion.div>
                 <Box>
               {/* Cart & Auth */}
@@ -448,32 +464,30 @@ const Header = () => {
                 </Box>
               </motion.div>
 
-              {/* Mobile Menu */}
-              <motion.div className="md:hidden" variants={fadeInFromLeft}>
-                {isMobile && (
-                  <IconButton
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    onClick={handleMobileMenuToggle}
-                    sx={{ ml: 2 }}
-                  >
-                    <MenuIcon className="text-black" />
-                  </IconButton>
-                )}
-              </motion.div>
+              
             </Box>
           </motion.div>
           <CartDrawer open={cartOpen} onClose={handleCartClose} />
 
           {/* Mobile Menu Drawer */}
-          <Drawer anchor="right" open={mobileMenuOpen} onClose={handleMobileMenuToggle}>
+          <Drawer anchor="left" open={mobileMenuOpen} onClose={handleMobileMenuToggle}>
             <Box
               sx={{ width: 250 }}
               role="presentation"
               onClick={handleMobileMenuToggle}
               onKeyDown={handleMobileMenuToggle}
             >
+              {isMobile && (
+               <motion.div className="flex items-center " initial="hidden" animate="visible" variants={fadeInFromLeft}>
+                
+            <Link
+              href="/"
+              sx={{ fontWeight: "bold", textDecoration: "none", alignItems: "center", fontSize: "22px" }}
+              className="text-black font-bold mr-2"
+            >
+              Cardano Cart
+            </Link>
+          </motion.div>)}
               <List>
                 {menuItems.map((item) => (
                   <ListItem button key={item.text} component={Link} href={item.href}>

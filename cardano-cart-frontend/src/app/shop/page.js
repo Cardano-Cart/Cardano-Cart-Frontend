@@ -39,6 +39,7 @@ import dynamic from "next/dynamic"
 import Header from "../_components/Header"
 import { current_products } from "../data"
 import { getAllProducts } from "../../../utils/_products"
+import { useCart } from "react-use-cart"
 
 const ShopAnimation = dynamic(() => import("../_components/ShopLoading"), {
   ssr: false
@@ -51,6 +52,8 @@ const ShopPage = () => {
   const [filteredProducts, setFilteredProducts] = useState(products)
   const [displayedProducts, setDisplayedProducts] = useState([])
   const theme = useTheme()
+  const { addItem } = useCart()
+  const [quantity, setQuantity] = useState(1)
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"))
   const [alertOpen, setAlertOpen] = useState(false)
@@ -200,9 +203,18 @@ const ShopPage = () => {
     setPriceRange(newValue)
   }
 
-  const handleAddToCart = product => {
-    // In a real app, this would add to cart state or context
-    setAlertMessage(`${product.name} added to cart successfully!`)
+  
+ const handleAddToCart = quickViewProduct => {
+    addItem({
+      id: quickViewProduct.id,
+      name: quickViewProduct.name,
+      price: quickViewProduct.price,
+      image: quickViewProduct.images[0].image_url,
+      quantity: quantity
+      // image: selectedImage,
+    })
+    setAlertMessage(`${quickViewProduct.name} added to cart successfully!`)
+    console.log(`${quickViewProduct.name} added to cart successfully!`)
     setAlertOpen(true)
   }
 
@@ -1109,3 +1121,4 @@ const ShopPage = () => {
 }
 
 export default ShopPage
+s

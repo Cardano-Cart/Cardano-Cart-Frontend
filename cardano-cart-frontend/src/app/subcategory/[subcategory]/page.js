@@ -40,6 +40,7 @@ import Header from "@/app/_components/Header"
 import { useParams } from "next/navigation"
 import { current_products } from "@/app/data"
 import { getAllProducts } from "../../../../utils/_products"
+import { useCart } from "react-use-cart"
 
 const ShopAnimation = dynamic(() => import("../../_components/ShopLoading"), {
   ssr: false,
@@ -47,6 +48,7 @@ const ShopAnimation = dynamic(() => import("../../_components/ShopLoading"), {
 
 const ShopPage = () => {
   const params = useParams()
+  const { addItem } = useCart()
   const subcategory = params.subcategory
   const subcategoryname = decodeURIComponent(subcategory)
   const [searchTerm, setSearchTerm] = useState("")
@@ -72,7 +74,7 @@ const ShopPage = () => {
 
   // Filter states
   const [availabilityFilters, setAvailabilityFilters] = useState({
-    inStock: true,
+    inStock: false,
     outOfStock: false,
   })
 
@@ -173,9 +175,17 @@ const ShopPage = () => {
     setPriceRange(newValue)
   }
 
-  const handleAddToCart = (product) => {
-    // In a real app, this would add to cart state or context
-    setAlertMessage(`${product.name} added to cart successfully!`)
+  const handleAddToCart = quickViewProduct => {
+    addItem({
+      id: quickViewProduct.id,
+      name: quickViewProduct.name,
+      price: quickViewProduct.price,
+      image: quickViewProduct.images[0].image_url,
+      quantity: quantity
+      // image: selectedImage,
+    })
+    setAlertMessage(`${quickViewProduct.name} added to cart successfully!`)
+    console.log(`${quickViewProduct.name} added to cart successfully!`)
     setAlertOpen(true)
   }
 
@@ -187,11 +197,12 @@ const ShopPage = () => {
   }
 
   const handleAvailabilityChange = (filter) => {
-    setAvailabilityFilters({
-      ...availabilityFilters,
-      [filter]: !availabilityFilters[filter],
-    })
-  }
+  setAvailabilityFilters((prevFilters) => ({
+    ...prevFilters,
+    [filter]: !prevFilters[filter],
+  }));
+};
+
 
   const handleCategoryChange = (filter) => {
     setCategoryFilters({
@@ -673,130 +684,157 @@ const ShopPage = () => {
           {/* Product Grid - adjust width based on whether sidebar is visible */}
           <Grid item xs={12} md={!isMobile ? 9 : 12}>
             <Grid container spacing={2}>
-              {displayedProducts.map((product) => (
-                <Grid
-                  item
-                  xs={6}
-                  sm={isMobile ? 6 : columnCount === 2 ? 6 : columnCount === 3 ? 4 : 3}
-                  md={columnCount === 2 ? 6 : columnCount === 3 ? 4 : 3}
-                  key={product.id}
-                >
-                  <Card
-                    sx={{
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Box sx={{ position: "relative" }}>
-                      {product.sale && (
-                        <Chip
-                          label="SALE"
-                          size="small"
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            left: 8,
-                            bgcolor: "grey.700",
-                            color: "white",
-                            fontSize: "0.7rem",
-                            height: 24,
-                          }}
-                        />
-                      )}
-                      <CardMedia
-                        component="img"
-                        height={isMobile ? "100" : isTablet ? "120" : "140"}
-                        image={product.images[0]?.image_url}
-                        alt={product.name}
-                        sx={{
-                          objectFit: "contain",
-                          bgcolor: "grey.100",
-                          height: {
-                            xs: "140px",
-                            sm: "160px",
-                            md: "180px",
-                          },
-                          p: 2,
-                        }}
-                      />
-                      {product.countdown && (
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            bgcolor: "primary.main",
-                            color: "white",
-                            display: "flex",
-                            justifyContent: "space-around",
-                            p: 0.5,
-                          }}
-                        >
-                          <Box sx={{ textAlign: "center" }}>
-                            <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
-                              274
-                            </Typography>
-                            <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
-                              Days
-                            </Typography>
-                          </Box>
-                          <Box sx={{ textAlign: "center" }}>
-                            <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
-                              7
-                            </Typography>
-                            <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
-                              Hrs
-                            </Typography>
-                          </Box>
-                          <Box sx={{ textAlign: "center" }}>
-                            <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
-                              58
-                            </Typography>
-                            <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
-                              Min
-                            </Typography>
-                          </Box>
-                        </Box>
-                      )}
-                    </Box>
-                    <CardContent
-                      sx={{
-                        flexGrow: 1,
-                        display: "flex",
-                        flexDirection: "column",
-                        p: 2,
-                      }}
-                    >
-                      <Typography variant="caption" color="text.secondary">
-                        {product.subcategory.name || "Electronics"}
-                      </Typography>
-                      <Typography variant={isMobile ? "body2" : "subtitle2"} component="div" noWrap sx={{ mb: 0.5 }}>
-                        {product.name}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <Typography variant={isMobile ? "caption" : "body2"}>₳{product.price}</Typography>
-                        {product.originalPrice && (
-                          <Typography variant="caption" color="text.secondary" sx={{ textDecoration: "line-through" }}>
-                            ₳{product.originalPrice}
-                          </Typography>
-                        )}
-                      </Box>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size={isMobile ? "small" : "medium"}
-                        onClick={() => handleAddToCart(product)}
-                        sx={{ mt: "auto", alignSelf: "stretch" }}
-                      >
-                        Add To Cart
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+              {displayedProducts.length > 0 ? (
+  displayedProducts.map(product => (
+    <Grid
+      item
+      xs={6}
+      sm={
+        isMobile
+          ? 6
+          : columnCount === 2
+          ? 6
+          : columnCount === 3
+          ? 4
+          : 3
+      }
+      md={columnCount === 2 ? 6 : columnCount === 3 ? 4 : 3}
+      key={product.id}
+    >
+      <Card
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 1
+        }}
+      >
+        <Box sx={{ position: "relative" }}>
+          {product.sale && (
+            <Chip
+              label="SALE"
+              size="small"
+              sx={{
+                position: "absolute",
+                top: 8,
+                left: 8,
+                bgcolor: "grey.700",
+                color: "white",
+                fontSize: "0.7rem",
+                height: 24
+              }}
+            />
+          )}
+          <CardMedia
+            component="img"
+            height={isMobile ? "100" : isTablet ? "120" : "140"}
+            image={product.images[0]?.image_url}
+            alt={product.name}
+            sx={{
+              objectFit: "contain",
+              bgcolor: "grey.100",
+              height: {
+                xs: "140px",
+                sm: "160px",
+                md: "180px"
+              },
+              p: 2
+            }}
+          />
+          {product.countdown && (
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                bgcolor: "primary.main",
+                color: "white",
+                display: "flex",
+                justifyContent: "space-around",
+                p: 0.5
+              }}
+            >
+              <Box sx={{ textAlign: "center" }}>
+                <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
+                  274
+                </Typography>
+                <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
+                  Days
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: "center" }}>
+                <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
+                  7
+                </Typography>
+                <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
+                  Hrs
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: "center" }}>
+                <Typography variant="caption" sx={{ fontSize: "0.75rem" }}>
+                  58
+                </Typography>
+                <Typography variant="caption" sx={{ fontSize: "0.6rem", display: "block" }}>
+                  Min
+                </Typography>
+              </Box>
+            </Box>
+          )}
+        </Box>
+        <CardContent
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            p: 2
+          }}
+        >
+          <Typography variant="caption" color="text.secondary">
+            {product.category_name || "Electronics"}
+          </Typography>
+          <Typography
+            variant={isMobile ? "body2" : "subtitle2"}
+            component="div"
+            noWrap
+            sx={{ mb: 0.5 }}
+          >
+            {product.name}
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant={isMobile ? "caption" : "body2"}>
+              ₳{product.price}
+            </Typography>
+            {product.originalPrice && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ textDecoration: "line-through" }}
+              >
+                ₳{product.originalPrice}
+              </Typography>
+            )}
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            size={isMobile ? "small" : "medium"}
+            onClick={() => handleAddToCart(product)}
+            sx={{ mt: "auto", alignSelf: "stretch" }}
+          >
+            Add To Cart
+          </Button>
+        </CardContent>
+      </Card>
+    </Grid>
+  ))
+) : (
+  <Grid item xs={12}>
+    <Typography variant="body2" align="center" color="text.secondary" sx={{ py: 4 }}>
+      No products available.
+    </Typography>
+  </Grid>
+)}
             </Grid>
 
             {/* Pagination - Updated to use MUI Pagination component */}

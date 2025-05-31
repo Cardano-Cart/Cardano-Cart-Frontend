@@ -170,6 +170,9 @@ export default function HeroSlider() {
                     px: 3,
                     py: 1,
                   }}
+                  onClick={() => {
+                    window.location.href = "/shop"
+                  }}
                 >
                   Shop Now
                 </Button>

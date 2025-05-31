@@ -30,12 +30,22 @@ import { useCart } from "react-use-cart";
 import { current_products } from "./data";
 import Feature from "./_components/pages/home/Category";
 
+
 import ProductShowcase from "./_components/ProductShowcase";
 import { getAllProducts } from "../../utils/_products";
 // import { useRouter } from "next/compat/router";
 import { useRouter } from "next/navigation";
 import CarouselBanner from "./_components/Carousel-Banner";
 import Features from "@/app/_components/pages/home/LatestProduct"
+import Link from "next/link";
+
+
+const navLinks = [
+  { label: "Home", href: "/" },
+  { label: "Shop", href: "/shop" },
+  { label: "About Us", href: "/about" },
+ 
+];
 
 
 const fadeInEffect = {
@@ -410,12 +420,18 @@ const Home = () => {
                   Quick Links
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-                  {["Home", "Shop", "About Us", "Contact"].map((link) => (
-                    <Button key={link} color="inherit" sx={{ mr: 2, mb: 1 }}>
-                      {link}
-                    </Button>
-                  ))}
-                </Box>
+  {navLinks.map((link) => (
+    <Link key={link.label} href={link.href} passHref>
+      <Button
+        color="inherit"
+        sx={{ mr: 2, mb: 1, color: "white" }} 
+      >
+        {link.label}
+      </Button>
+    </Link>
+  ))}
+</Box>
+
               </Grid>
             </Grid>
             <Box mt={3}>
